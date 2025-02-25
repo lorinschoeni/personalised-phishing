@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+body {
+    font-family: 'Google Sans', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f1f3f4;
+}
+
+#email-list {
+    border: 1px solid #ccc;
+    padding: 10px 20px;
+    margin: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+}
+
+#email-list p:hover, .email_selected {
+    background-color: #f8f9fa;
+}
+
+#email-display {
+    display: none;
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: none;
+    border-left: none;
+    border-right: none;
+}
+
+.email_unread {
+    font-weight: bold;
+    background-color: #f0f0f0;
+}
+
+.fake-link {
+    color: #1a73e8;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.fake-link:hover {
+    text-decoration: none;
+}
+
+button {
+    background-color: #1a73e8;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #2b7de9;
+}
+
+p {
+    line-height: 1.6;
+}
+
+#email-list p {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#email-list p:hover {
+    background-color: #ddd;
+}
+
+.fake-attachment {
+    display: inline-block;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 10px;
+    background-color: #e8eaed;
+    text-decoration: none;
+    color: #333;
+    font-size: 0.8em;
+    line-height: 1.4;
+}
+
+.fake-attachment:before {
+    content: "📎";
+    margin-right: 5px;
+    font-size: 1.2em;
+}
+
+.fake-attachment .name {
+    font-weight: bold;
+    margin-right: 5px;
+    color: #5f6368;
+}
+
+.fake-attachment .size {
+    color: #666;
+    color: #5f6368;
+}
+
+.sender-option1 {
+    font-weight: normal;
+}
+
+.sender-option1 .email-address {
+    color: #888;
+    font-size: 0.9em;
+}
+
+.email-sender {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    font-weight: normal;
+}
+
+.email-sender:hover {
+    text-shadow: 0 0 1px #1a73e8;
+}
+
+.email-sender .tooltip {
+    visibility: hidden;
+    width: 200px;
+    background-color: #f9f9f9;
+    color: #333;
+    text-align: left;
+    border-radius: 5px;
+    padding: 10px;
+    position: absolute;
+    z-index: 1;
+    top: 125%;
+    left: 50%;
+    margin-left: -125px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.9em;
+    white-space: nowrap;
+    text-shadow: none; 
+    font-weight: bold; 
+    left: 60%; 
+    text-align: center;
+}
+
+.email-sender.show-tooltip .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+.email-header {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 0px;
+    margin-bottom: 10px;
+}
+
+#banner {
+    cursor: pointer;
+}
+
+#attachmentPopup {
+    display: none;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 3;
+    cursor: pointer;
+}
+
+#attachmentPopup .popup-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 800px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    position: relative;
+}
+
+#attachmentPopup img {
+    max-width: 100%;
+    max-height: 70vh;
+    border-radius: 5px;
+}
+
+#attachmentPopup button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: transparent;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: #333;
+}
+
+.sender-alias {
+    color: #1c1b5a;
+    margin-right: 5px;
+}
+
+.email-item {
+    padding: 5px;
+    border-bottom: 1px solid #ddd;
+    border-top: 1px solid #ddd;
+}
+
+    </style>
+</head>
+
+<body>
+    <div id="email-list">
+        <!-- ??? -->
+        <!-- ... -->
+    </div>
+    <button onclick="resetDisplayTime()">newreset</button>
+    <div id="email-display">
+        <!-- email content - do I still need this? -->
+        <!-- ... -->
+        <button onclick="showEmailList()">Back to List</button>
+    </div>
+    
+    <div id="reportOverlay" style="display: none; position: fixed; width: 100%; height: 100%; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); z-index: 2; cursor: pointer;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; height: 80%; background-color: white; padding: 20px; border-radius: 10px;">
+            <h2>Report Email</h2>
+            <p>Please provide information about why you are reporting this email:</p>
+            <textarea id="reportText" style="width: 100%; height: 50%;"></textarea>
+            <button onclick="reportEmail()">Report</button>
+            <button onclick="closeReportOverlay()">Cancel</button>
+        </div>
+    </div>
+
+
+    <div id="notification" style="display: none; position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); background-color: #444; color: white; padding: 20px; border-radius: 10px;"></div>
+
+
+    <div id="banner" onclick="hideBanner()" style="display: none; position: fixed; top: 0; left: 0; width: 100%; background-color: rgba(68, 68, 68, 0.8); color: white; padding: 20px; border-radius: 0 0 10px 10px; align-items: center;">
+        <img id="bannerSymbol" src="" alt="Banner Image" style="width: 100px; height: 100px; margin-right: 20px;">
+        <p id="bannerText"></p>
+    </div>
+    
+    
+    <div id="attachmentPopup">
+        <div class="popup-content">
+            <img id="popupImage" src="" alt="Attachment">
+            <button onclick="closeAttachmentPopup()">&times;</button>
+        </div>
+    </div>
+    
+
+    
+
+
+
+    
+    <script>
+/////////////////////////////////////////////
+/////////////////////////////////////////////
+window.condition_assigned_group = 'education';
+console.log(window.condition_assigned_group);
+/////////////////////////////////////////////
+/////////////////////////////////////////////
+
+
+
+window.banners = {
+    1: {
+        image: "https://ethzurichenv.eu.qualtrics.com/ControlPanel/Graphic.php?IM=IM_I37klhW8AlEpxDd",
+        text: "Be careful when emails try to scare you with immediate negative consequences. Take a moment to consider whether there is actually something of concern."
+    },
+    2: {
+        image: "https://ethzurichenv.eu.qualtrics.com/ControlPanel/Graphic.php?IM=IM_OAjk9JZQPocffL3",
+        text: "Fear Manipulation: Phishing emails often paint a dire picture, demanding immediate action before things worsen. Confirm before reacting to threats."
+    },
+    3: {
+        image: "https://ethzurichenv.eu.qualtrics.com/ControlPanel/Graphic.php?IM=IM_xmnFM64w7UbL7rS",
+        text: "Fear Manipulation: Phishing emails try to paint a dark picture, with immediate action required before things get works. Confirm before reacting to threats."
+    },
+    4: {
+        image: "https://ethzurichenv.eu.qualtrics.com/ControlPanel/Graphic.php?IM=IM_XwRIK2NTnCKfwZ3",
+        text: "Too Good to Be True? Phishers lie with fake rewards to lure you in."
+    },
+    5: {
+        image: "https://ethzurichenv.eu.qualtrics.com/ControlPanel/Graphic.php?IM=IM_t7k7CD05VmbOmda",
+        text: "Check Before You Click: Hover to see the real URL. Don't get redirected!"
+    },
+    6: {
+        image: "https://ethzurichenv.eu.qualtrics.com/ControlPanel/Graphic.php?IM=IM_mQYSR3ZfgglURRK",
+        text: "Links Can Lie. By using similar-looking characters, they can imitate official domain names."
+    },
+    7: {
+        image: "https://ethzurichenv.eu.qualtrics.com/ControlPanel/Graphic.php?IM=IM_EMgqlDm5dgLd3c0",
+        text: "Shortened Links? Treat them with suspicion. Inspect before clicking."
+    },
+    8: {
+        image: "https://ethzurichenv.eu.qualtrics.com/ControlPanel/Graphic.php?IM=IM_Js9hcDC4e3hlrYO",
+        text: "Links Aren’t Always Legit: Even 'official' links need a second look. Inspect before you act."
+    },
+    9: {
+        image: "https://ethzurichenv.eu.qualtrics.com/ControlPanel/Graphic.php?IM=IM_ltDjRVXh3GT6iiT",
+        text: "Unexpected Attachments? Ask 'why' before opening. Verify the source."
+    },
+    10: {
+        image: "https://ethzurichenv.eu.qualtrics.com/ControlPanel/Graphic.php?IM=IM_3EPtNJbw6PalS71",
+        text: "Attachments Can Be Dangerous: Never open from unknown sources."
+    },
+    11: {
+        image: "https://ethzurichenv.eu.qualtrics.com/ControlPanel/Graphic.php?IM=IM_NhgyAp6gelJm93u",
+        text: "Attachment with unusual file endings could execute dangerous code. Always be extra careful in those cases!"
+    },
+    12: {
+        image: "https://ethzurichenv.eu.qualtrics.com/ControlPanel/Graphic.php?IM=IM_ivQMZLXhatbD61s",
+        text: "Attachments can be made to look attractive but could in fact contain malicious code."
+    }
+};
+
+
+if (!window.emailScriptLoaded) {
+    window.emailScriptLoaded = true;
+
+
+var currentEmailId = null;
+
+window.showBanner = function(bannerId, initializeBannerCall) {
+    // Fetch the banner details from the window.banners object
+    const bannerDetails = window.banners[bannerId];
+    
+    if (bannerDetails) {
+        document.getElementById('bannerSymbol').src = bannerDetails.image;
+        document.getElementById('bannerText').textContent = bannerDetails.text;
+        
+        // Display the banner
+        document.getElementById('banner').style.display = 'flex';
+
+        // ... and hide again
+        setTimeout(function() {
+            let emailList = document.getElementById('email-list');
+            if (!emailList || initializeBannerCall != emailList.dataset.initializeBannerCall) {
+                return;
+            }
+
+            hideBanner();
+        }, 15000);
+    }
+};
+
+
+window.hideBanner = function() {
+    // Hide the banner?
+    document.getElementById('banner').style.display = 'none';
+};
+
+
+window.loadEmails = function() {
+    // Load the emails from localStorage
+    const savedEmails = localStorage.getItem('emails');
+    if (savedEmails) {
+        window.emails = JSON.parse(savedEmails);
+    } else {
+        console.error('No emails found in localStorage!');
+    }
+};
+window.loadEmails();
+
+
+
+    window.showEmailContent = function(emailId) {
+
+        currentEmailId = emailId;
+        // Hide email list section
+        document.getElementById('email-list').style.display = 'none';
+
+        // Show email display section
+        document.getElementById('email-display').style.display = 'block';
+
+        // Fetch email content based on emailId from the emails object
+        const emailSubject = emails[emailId].subject;
+        const emailContent = emails[emailId].content;
+        const emailSenderAlias = emails[emailId].senderAlias;
+        const emailSender = emails[emailId].sender;
+        const displayOption = emails[emailId].displayOption;
+
+        function setupFakeAttachmentClickHandlers() {
+    const attachments = document.querySelectorAll('.fake-attachment');
+    attachments.forEach(attachment => {
+        attachment.addEventListener('click', function() {
+            // Get the URL from the data attribute
+            const imageUrl = attachment.getAttribute('data-popup-content');
+            
+            // Check if imageUrl is a thing
+            if (imageUrl) {
+                // Show the attachment popup
+                showAttachmentPopup(imageUrl);
+            }
+        });
+    });
+}
+
+
+
+
+        // Determine the sender display based on the option
+        let senderHTML = '';
+        if (displayOption === 1) {
+            senderHTML = '<span class="sender-option1">' +
+                        emailSenderAlias + 
+                        ' <span class="email-address">&lt;' + emailSender + '&gt;</span></span>';
+        } else if (displayOption === 2) {
+            senderHTML = '<span class="email-sender" onmouseover="showTooltip(this)" onmouseout="hideTooltip(this)">' +
+                        emailSenderAlias + 
+                        '<span class="tooltip">' + emailSenderAlias + '<br>' + emailSender + '</span></span>';
+        }
+
+    
+
+        // Populate email display section
+        var emailDisplayHTML = 
+            '<div class="email-header">' +
+            '<h2>' + 
+            emailSubject + 
+            '</h2><p>From: ' + 
+            senderHTML  + 
+            '</p><p>To: alex.green@vortex.com</p><p>' + 
+            '</div>' +
+            emailContent + 
+            '</div>' +
+            '<br><br>' +
+            '<button id="reply-button" style="margin-right: 5px;" onclick="showReplyField()">Reply</button>' +
+            '<textarea id="reply-text" style="display:none; margin-right: 5px;"></textarea>' +
+            '<span id="replied-status" style="display:none; margin-right: 5px;">Replied &#x2714;</span>' +
+            '<button id="send-button" style="display:none; margin-right: 5px;" onclick="sendReply()">Send</button>' +
+            '<button id="cancel-button" style="display:none; margin-right: 5px;" onclick="cancelReply()">Cancel</button>' +
+            '<button onclick="showReportOverlay(' + emailId + ')">Report</button>' +
+            '<br>' +
+            '<button onclick="showEmailList()">Back to List</button>';
+        document.getElementById('email-display').innerHTML = emailDisplayHTML;
+
+
+        checkRepliedStatus(emailId);
+        setupFakeAttachmentClickHandlers();
+
+        // Mark email as read;
+        document.getElementById('email_' + emailId).classList.remove('email_unread');
+
+        localStorage.setItem('email' + emailId, 'read');
+    };
+
+    
+
+    
+    // tooltip delay
+function showTooltip(element) {
+    element.tooltipTimeout = setTimeout(() => {
+        element.classList.add('show-tooltip');
+    }, 1000); // 1 second delay
+}
+
+function hideTooltip(element) {
+    clearTimeout(element.tooltipTimeout);
+    element.classList.remove('show-tooltip');
+}
+
+
+
+// Show the reply textarea and send/cancel buttons
+function showReplyField() {
+    document.getElementById('reply-text').style.display = 'block';
+    document.getElementById('send-button').style.display = 'inline-block';
+    document.getElementById('cancel-button').style.display = 'inline-block';
+    document.getElementById('reply-button').style.display = 'none';
+}
+
+// Handle the Send button click
+function sendReply() {
+    localStorage.setItem('replied-status-' + currentEmailId, 'true');
+    document.getElementById('reply-text').style.display = 'none';
+    document.getElementById('send-button').style.display = 'none';
+    document.getElementById('cancel-button').style.display = 'none';
+    document.getElementById('replied-status').style.display = 'inline-block';
+}
+
+// Handle the Cancel button click
+function cancelReply() {
+    document.getElementById('reply-text').style.display = 'none';
+    document.getElementById('send-button').style.display = 'none';
+    document.getElementById('cancel-button').style.display = 'none';
+    document.getElementById('reply-button').style.display = 'inline-block';
+}
+
+
+function checkRepliedStatus(emailId) {
+    var repliedStatus = localStorage.getItem('replied-status-' + emailId);
+    if (repliedStatus === 'true') {
+        document.getElementById('reply-button').style.display = 'none';
+        document.getElementById('replied-status').style.display = 'inline-block';
+    } else {
+        document.getElementById('replied-status').style.display = 'none';
+        document.getElementById('reply-button').style.display = 'inline-block';
+    }
+}
+
+    
+    window.showEmailList = function() {
+        document.getElementById('email-display').style.display = 'none';
+
+        document.getElementById('email-list').style.display = 'block';
+    }
+
+    window.populateEmailList = function() {
+
+    let deletedEmails = localStorage.getItem('deletedEmails');
+    deletedEmails = deletedEmails ? deletedEmails.split(',') : [];
+
+    // avoid duplication
+    document.getElementById('email-list').innerHTML = '';
+
+    let delay = 0;
+
+    let emailListPopulateCall = (window.emailListPopulateCall || 0) + 1;
+    window.emailListPopulateCall = emailListPopulateCall;
+
+    let currentTime = Date.now();
+    let startTime = localStorage.getItem('emailListPopulateStartTime');
+    if (!startTime) {
+        startTime = currentTime;
+        localStorage.setItem('emailListPopulateBaseTime', startTime);
+    } else {
+        startTime = parseInt(startTime);
+    }
+    let startTimeDiff = startTime - currentTime;
+
+    for (let emailId in emails) {
+        // Skip emails that are marked as deleted
+        if (deletedEmails.includes(emailId)) {
+            continue;
+        }
+        let displayTime = localStorage.getItem('email' + emailId + 'DisplayTime');
+        if (!displayTime) {
+            // Store the display time
+            displayTime = startTime + delay;
+            localStorage.setItem('email' + emailId + 'DisplayTime', displayTime);
+        } else {
+            displayTime = parseInt(displayTime);
+        }
+        const remainingTime = displayTime - startTime + startTimeDiff;
+        if (remainingTime > 0) {
+            setTimeout(function() {
+                if (window.emailListPopulateCall !== emailListPopulateCall) return;
+                displayEmail(emailId);
+             }, remainingTime);
+        } else {
+            displayEmail(emailId);
+        }
+        // Set the delay for each email
+        delay += getEmailDelay(emailId);
+    }
+};
+
+
+
+        function getEmailDelay(emailId) {
+    const delays = [
+        0, 15000, 25000, 30000, 40000, 45000, 50000, 50000, 50000, 50000, 
+        50000, 50000, 59000, 50000, 50000, 50000, 50000, 50000, 40000, 40000, 
+        40000, 40000, 40000, 40000, 40000, 40000, 40000, 40000, 30000, 20000, 
+        10000
+    ];
+    return delays[emailId] || 0;
+}
+
+        window.createEmailElement = function(emailId) {
+            const email = emails[emailId];
+            const emailClass = localStorage.getItem('email' + emailId) === 'read' ? '' : 'email_unread';
+
+            const emailElement = document.createElement('p');
+            emailElement.id = 'email_' + emailId;
+            emailElement.className = 'email-item ' + emailClass;
+
+            emailElement.innerHTML = '<span class="sender-alias">' + email.senderAlias + '</span> - ' + email.subject;
+
+            emailElement.addEventListener('click', function() {
+                showEmailContent(emailId);
+            });
+
+            return emailElement;
+        };
+
+        window.displayEmail = function(emailId) {
+    // Check if the email has been marked as deleted
+    if (localStorage.getItem('email' + emailId + 'Deleted') === 'true') {
+        return; // Skip displaying this email
+    }
+
+    const emailList = document.getElementById('email-list');
+    const emailElement = createEmailElement(emailId);
+    emailList.insertBefore(emailElement, emailList.firstChild); // Insert new emails at the top
+};
+
+
+        window.resetDisplayTime = function() {
+            localStorage.clear();
+            location.reload();
+        };
+
+
+window.showNotification = function(message) {
+    const notification = document.getElementById('notification');
+
+    notification.textContent = message;
+
+    notification.style.display = 'block';
+
+    setTimeout(function() {
+        notification.style.display = 'none';
+    }, 3000);
+};
+
+
+
+window.showReportOverlay = function(emailId) {
+    currentEmailId = emailId;
+
+    document.getElementById('reportOverlay').style.display = 'block';
+};
+
+window.closeReportOverlay = function() {
+    document.getElementById('reportOverlay').style.display = 'none';
+    currentEmailId = null;
+};
+
+window.reportEmail = function() {
+    let reportedEmails = localStorage.getItem('reports');
+    reportedEmails = reportedEmails ? reportedEmails.split(',') : [];
+    reportedEmails.push(currentEmailId);
+    localStorage.setItem('reports', reportedEmails.join(','));
+    try {
+    Qualtrics.SurveyEngine.setEmbeddedData('reports', reportedEmails.join(','));
+} catch (error) {
+    console.error('Failed to set embedded data:', error);
+}
+    console.log("Email " + currentEmailId + " reported successfully!");
+    let deletedEmails = localStorage.getItem('deletedEmails');
+    deletedEmails = deletedEmails ? deletedEmails.split(',') : [];
+    deletedEmails.push(currentEmailId);
+    localStorage.setItem('deletedEmails', deletedEmails.join(','));
+    const emailElement = document.getElementById('email_' + currentEmailId);
+    emailElement.style.display = 'none';
+    showNotification('The email was reported and deleted.');
+    closeReportOverlay();
+    showEmailList();
+};
+
+
+
+window.showAttachmentPopup = function(imageUrl) {
+    // Set the src of the popup image
+    document.getElementById('popupImage').src = imageUrl;
+
+    // Show the popup // why is this here
+    document.getElementById('attachmentPopup').style.display = 'block';
+
+    attachmentPopup.addEventListener('click', function(event) {
+        if (event.target === attachmentPopup) {
+            closeAttachmentPopup();
+        }
+    });
+};
+
+function closeAttachmentPopup() {
+    document.getElementById('attachmentPopup').style.display = 'none';
+}
+
+
+// detect if something should happen
+document.addEventListener('DOMContentLoaded', () => {
+    const attachments = document.querySelectorAll('.fake-attachment');
+
+    attachments.forEach(attachment => {
+        attachment.addEventListener('click', () => {
+            const content = attachment.getAttribute('data-popup-content');
+            showAttachmentPopup(content);
+        });
+    });
+});
+
+
+
+
+
+/////////////////////
+// TIMERS
+/////////////////////
+
+
+
+
+
+// Constants
+const BANNER_INTERVAL = 20000;
+
+// Helper function to get the remaining time
+// can be removed
+/*
+function getRemainingTime(key, duration) {
+    const startTime = localStorage.getItem(key);
+    if (!startTime) {
+        const now = Date.now();
+        localStorage.setItem(key, now);
+        return duration;
+    } else {
+        const elapsedTime = Date.now() - parseInt(startTime);
+        return Math.max(duration - elapsedTime, 0);
+    }
+}*/
+
+function scheduleNextBanner(initializeBannerCall, startTime) {
+    const lastBannerIndex = parseInt(localStorage.getItem('lastBannerIndex')) || 0;
+    const nextIndex = lastBannerIndex + 1;
+
+    var currentTime = Date.now();
+
+    if (nextIndex <= 12) {
+        const key = `banner-${nextIndex}`;
+
+        let displayTime = localStorage.getItem(key);
+        if (!displayTime) {
+            // Store the display time
+            displayTime = startTime + BANNER_INTERVAL;
+            localStorage.setItem(key, displayTime);
+        } else {
+            displayTime = parseInt(displayTime);
+        }
+
+
+        const remainingTime = displayTime - currentTime;        
+
+        if (remainingTime > 0) {
+            setTimeout(() => {
+                if (initializeBannerCall !== window.initializeBannerCall) return;
+                let emailList = document.getElementById('email-list');
+                if (!emailList || initializeBannerCall != emailList.dataset.initializeBannerCall) {
+                    return;
+                }
+
+                showBanner(nextIndex, initializeBannerCall);
+                localStorage.setItem('lastBannerIndex', nextIndex);
+
+                const currentTime = Date.now();
+                scheduleNextBanner(initializeBannerCall, currentTime);
+                localStorage.setItem('bannerStartTime', currentTime);
+            }, remainingTime);
+        } else {
+            let emailList = document.getElementById('email-list');
+            if (!emailList || initializeBannerCall != emailList.dataset.initializeBannerCall) {
+                return;
+            }
+
+            showBanner(nextIndex, initializeBannerCall);
+            localStorage.setItem('lastBannerIndex', nextIndex);
+
+            const currentTime = Date.now();
+            scheduleNextBanner(initializeBannerCall, currentTime);
+            localStorage.setItem('bannerStartTime', currentTime);
+        }
+    }
+}
+
+
+function initializeBanners() {
+    const lastBannerIndex = parseInt(localStorage.getItem('lastBannerIndex')) || 0;
+    if (lastBannerIndex === 0) {
+        // Start from banner 1 if no banner has been shown
+        localStorage.setItem('lastBannerIndex', 0);
+    }
+
+    let initializeBannerCall = (window.initializeBannerCall || 0) + 1;
+    window.initializeBannerCall = initializeBannerCall;
+    
+    let currentTime = Date.now();
+    let startTime = localStorage.getItem('bannerStartTime');
+    if (!startTime) {
+        startTime = currentTime;
+        localStorage.setItem('bannerStartTime', startTime);
+    } else {
+        startTime = parseInt(startTime);
+    }
+    let startTimeDiff = startTime - currentTime;
+
+    let emailList = document.getElementById('email-list');
+    if (!emailList) {
+        return;
+    }
+    emailList.dataset.initializeBannerCall = initializeBannerCall;
+
+    scheduleNextBanner(initializeBannerCall, startTime + startTimeDiff);
+}
+
+// This is where the block that limits execution to once per window ends
+}
+
+
+initializeBanners();
+window.populateEmailList();
+
+
+    </script>
+</body>
+</html>

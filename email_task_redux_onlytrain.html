@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+body {
+    font-family: 'Google Sans', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f1f3f4;
+}
+
+#email-list {
+    border: 1px solid #ccc;
+    padding: 10px 20px;
+    margin: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+}
+
+#email-list p:hover, .email_selected {
+    background-color: #f8f9fa;
+}
+
+#email-display {
+    display: none;
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: none;
+    border-left: none;
+    border-right: none;
+}
+
+#special-email-display {
+    display: none;
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: none;
+    border-left: none;
+    border-right: none;
+}
+
+.email_unread {
+    font-weight: bold;
+    background-color: #f0f0f0;
+}
+
+.fake-link {
+    color: #1a73e8;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.fake-link:hover {
+    text-decoration: none;
+}
+
+button {
+    background-color: #1a73e8;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #2b7de9;
+}
+
+p {
+    line-height: 1.6;
+}
+
+#email-list p {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#email-list p:hover {
+    background-color: #ddd;
+}
+
+.fake-attachment {
+    display: inline-block;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 10px;
+    background-color: #e8eaed;
+    text-decoration: none;
+    color: #333;
+    font-size: 0.8em;
+    line-height: 1.4;
+}
+
+.fake-attachment:before {
+    content: "📎";
+    margin-right: 5px;
+    font-size: 1.2em;
+}
+
+.fake-attachment .name {
+    font-weight: bold;
+    margin-right: 5px;
+    color: #5f6368;
+}
+
+.fake-attachment .size {
+    color: #666;
+    color: #5f6368;
+}
+
+.sender-option1 {
+    font-weight: normal;
+}
+
+.sender-option1 .email-address {
+    color: #888;
+    font-size: 0.9em;
+}
+
+.email-sender {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    font-weight: normal;
+}
+
+.email-sender:hover {
+    text-shadow: 0 0 1px #1a73e8;
+}
+
+.email-sender .tooltip {
+    visibility: hidden;
+    width: 200px;
+    background-color: #f9f9f9;
+    color: #333;
+    text-align: left;
+    border-radius: 5px;
+    padding: 10px;
+    position: absolute;
+    z-index: 1;
+    top: 125%;
+    left: 50%;
+    margin-left: -125px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.9em;
+    white-space: nowrap;
+    text-shadow: none; 
+    font-weight: bold; 
+    left: 60%; 
+    text-align: center;
+}
+
+.email-sender.show-tooltip .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+.email-header {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 0px;
+    margin-bottom: 10px;
+}
+
+#banner {
+    cursor: pointer;
+}
+
+#overlay-content {
+    display: none;
+    position: absolute;
+    z-index: 10;
+    padding: 15px;
+    background-color: white;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+}
+
+.highlighted-green, .no-dim-green {
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
+    border: 2px solid darkgreen;
+    padding: 5px;
+    background-color: white;
+}
+
+.special-text-correct {
+    font-weight: bold;
+    margin-top: 20px;
+    background-color: rgb(205, 231, 205);
+    padding: 10px;
+    border-left: 4px solid darkgreen;
+}
+
+.special-text-incorrect {
+    font-weight: bold;
+    margin-top: 20px;
+    background-color: rgb(255, 204, 204);
+    padding: 10px;
+    border-left: 4px solid darkred;
+}
+
+.highlighted {
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
+    border: 2px solid darkred;
+    padding: 5px;
+    background-color: white;
+}
+
+.special-text {
+    font-weight: bold;
+    margin-top: 20px;
+    background-color: #f0f8ff;
+    padding: 10px;
+    border-left: 4px solid #007bff;
+}
+
+
+    </style>
+</head>
+<body>
+
+    
+    <div id="special-email-display" style="display: block;">
+        <!-- This section will be dynamically populated -->
+    </div>
+    
+    
+    
+
+
+
+    
+    <script>
+/////////////////////////////////////////////
+/////////////////////////////////////////////
+window.condition_assigned_group = 'education';
+console.log(window.condition_assigned_group);
+/////////////////////////////////////////////
+/////////////////////////////////////////////
+
+
+// Helper function to calculate remaining time
+function getRemainingTime(key, duration) {
+    const startTime = localStorage.getItem(key);
+    if (!startTime) {
+        const now = Date.now();
+        localStorage.setItem(key, now);
+        return duration;
+    } else {
+        const elapsedTime = Date.now() - parseInt(startTime);
+        return Math.max(duration - elapsedTime, 0);
+    }
+}
+
+
+
+
+window.showBanner = function(bannerId) {
+    // Fetch the banner details from the window.banners object
+    const bannerDetails = window.banners[bannerId];
+    
+    if (bannerDetails) {
+        // Set the image source and text
+        document.getElementById('bannerSymbol').src = bannerDetails.image;
+        document.getElementById('bannerText').textContent = bannerDetails.text;
+        
+        // Display the banner
+        document.getElementById('banner').style.display = 'flex';
+
+        // ... and hide again
+        setTimeout(function() {
+            hideBanner();
+        }, 15000);
+    }
+};
+
+
+// Retrieve emails from localStorage
+    const storedEmails = localStorage.getItem('specialEmails');
+        if (storedEmails) {
+            window.specialEmails = JSON.parse(storedEmails);
+            console.log('Emails loaded from localStorage:', window.specialEmails);
+        } else {
+            console.error('No emails found in localStorage.');
+        }
+
+
+
+let currentSpecialEmailIndex = 0;
+let specialEmailTimeout;
+
+function startSpecialEmailDisplay() {
+    if (condition_assigned_group === 'training' || condition_assigned_group === 'education') {
+        specialEmailTimeout = setTimeout(showSpecialEmail, 10);
+    }
+}
+
+function showSpecialEmail() {
+    displaySpecialEmail(currentSpecialEmailIndex);
+}
+
+function displaySpecialEmail(index) {
+    console.log('displaying training email', index);
+    const email = window.specialEmails[index];
+
+    // Determine the sender display based on the chosen option
+    let senderHTML = '';
+    if (email.displayOption === 1) {
+        senderHTML = '<span class="sender-option1 highlight-sender">' +
+                    email.senderAlias + 
+                    ' <span class="email-address">&lt;' + email.sender + '&gt;</span></span>';
+    } else if (email.displayOption === 2) {
+        senderHTML = '<span class="email-sender highlight-sender" onmouseover="showTooltip(this)" onmouseout="hideTooltip(this)">' +
+                    email.senderAlias + 
+                    '<span class="tooltip">' + email.senderAlias + '<br>' + email.sender + '</span></span>';
+    }
+
+    // Populate special email display section
+    var specialEmailDisplayHTML = 
+        '<div id="email-container">' +
+            '<div class="email-header">' +
+            '<h2 class="highlight-subject">' + 
+            email.subject + 
+            '</h2><p>From: ' + 
+            senderHTML  + 
+            '</p><p>To: alex.green@vortex.com</p><p class="highlight-content">' + 
+            '</div>' +
+            email.content + 
+        '</div>' +
+        '<div id="special-text" class="special-text">' +
+        email.specialText +
+        '</div>' +
+        '<div id="multiple-choice" style="margin-top: 20px;"></div>' +
+        '<div id="overlay-content" style="display: none; position: absolute; top: 50%; left: 50%; z-index: 10;"></div>' +
+        '<button id="continue-button" style="display: none; margin-top: 20px;" onclick="showNextEmail()">Continue</button>' +
+        '<button id="back-to-list-button" style="display: none; margin-top: 20px;" onclick="closeSpecialEmail()">Back to List</button>';
+    
+    document.getElementById('special-email-display').innerHTML = specialEmailDisplayHTML;
+    console.log('Populated special-email-display with email details');
+
+    // Populate multiple choice options
+    const multipleChoiceDiv = document.getElementById('multiple-choice');
+    email.options.forEach((option, i) => {
+        const optionButton = document.createElement('button');
+        optionButton.innerHTML = option;
+        optionButton.onclick = function() {
+            handleOptionSelect(i, index);
+        };
+        multipleChoiceDiv.appendChild(optionButton);
+    });
+}
+
+
+function handleOptionSelect(selectedIndex, emailIndex) {
+    const email = window.specialEmails[emailIndex];
+    const response = email.responses[selectedIndex];
+
+    // Update the special text with the selected response text
+    const specialTextElement = document.getElementById('special-text');
+    specialTextElement.innerHTML = response.text;
+
+    // Remove the special-text class and add special-text-correct if the response is correct
+    specialTextElement.classList.remove('special-text'); // Remove special-text class if present
+    if (response.correct === 'yes') {
+        specialTextElement.classList.add('special-text-correct'); // Add correct class
+    } else {
+        specialTextElement.classList.add('special-text-incorrect'); // Add the default special-text class if incorrect
+    }
+
+    // Clear any previous highlights
+    document.querySelectorAll('.highlighted, .highlighted-green').forEach(el => {
+        el.classList.remove('highlighted', 'highlighted-green');
+        el.style.boxShadow = 'none'; // Remove previous shadow
+        el.style.borderColor = ''; // Reset border color
+    });
+
+    // Highlight the specific line based on the selected response
+    // Check if a highlight class is specified in the response
+    if (response.highlightClass && typeof response.highlightClass === 'string') {
+    // Sanitize the class name to avoid issues with invalid selectors
+    const sanitizedClass = response.highlightClass.trim().replace(/[^a-zA-Z0-9-_]/g, '');
+    
+    if (sanitizedClass) {
+        const highlightElement = document.querySelector('.' + sanitizedClass);
+        
+        // Check if the element exists
+        if (highlightElement) {
+            if (response.correct === 'yes') {
+                highlightElement.classList.add('highlighted-green');
+            } else {
+                highlightElement.classList.add('highlighted');
+            }
+        } else {
+            console.warn('No element found with the class:', sanitizedClass);
+        }
+    } else {
+        console.warn('Sanitized class name is empty or invalid:', response.highlightClass);
+    }
+} else {
+    console.warn('Invalid or missing highlightClass:', response.highlightClass);
+}
+
+
+
+    // Remove all multiple-choice buttons after one is clicked
+    const multipleChoiceDiv = document.getElementById('multiple-choice');
+    multipleChoiceDiv.innerHTML = '';
+
+    // Create overlay
+    const overlayContent = document.getElementById('overlay-content');
+    overlayContent.style.display = 'block';
+    overlayContent.style.top = response.overlay.position.top;
+    overlayContent.style.left = response.overlay.position.left;
+    overlayContent.innerHTML = response.overlay.text;
+
+    // Show the continue button if there are more emails, otherwise show button
+    if (emailIndex === window.specialEmails.length - 1) {
+        document.getElementById('continue-button').style.display = 'none';
+        document.getElementById('back-to-list-button').style.display = 'block';
+    } else {
+        document.getElementById('continue-button').style.display = 'block';
+        document.getElementById('back-to-list-button').style.display = 'none';
+    }
+}
+
+
+
+function showNextEmail() {
+    currentSpecialEmailIndex++;
+    if (currentSpecialEmailIndex < window.specialEmails.length) {
+        displaySpecialEmail(currentSpecialEmailIndex);
+        document.getElementById('overlay-content').style.display = 'none';
+        document.getElementById('continue-button').style.display = 'none';
+    } else {
+        document.getElementById('back-to-list-button').style.display = 'block';
+        document.getElementById('overlay-content').style.display = 'none';
+        document.getElementById('continue-button').style.display = 'none';
+    }
+}
+
+function closeSpecialEmail() {
+    document.getElementById('special-email-display').style.display = 'none';
+    /// continue timings!!
+    {document.getElementById('NextButton').click()}
+}
+
+startSpecialEmailDisplay(); // Trigger the email display
+
+
+
+    </script>
+</body>
+</html>

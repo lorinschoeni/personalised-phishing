@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Save Emails to Local Storage</title>
+</head>
+<body>
+    
+    <script>
+        // Automatically save emails to localStorage when the page loads
+        (function saveEmails() {
+            const emails = {
+                1: {
+                    subject: "Temporary Mailbox", 
+                    sender: "it@vortex.com",
+                    senderAlias: "IT Services",
+                    displayOption: 2,
+                    content: 'Hi Alex,<br>' +
+                            'Welcome back from vacation. How are you?<br><br>' +
+                            'We are in the process of changing our email mailboxes. The current one has limited features, but please use it to check up on things in the meantime.<br><br>' +
+                            'You can also only view attachments in safe mode in-browser for the time being. But if you see anything suspicious, please let us know anyway by reporting the email (reason optional).<br><br>' +
+                            'Kind regards,<br>' +
+                            'Sam<br>' +
+                            'IT Services<br>'
+                },
+                2: {
+                    subject: "Welcome back!", 
+                    sender: "jenny.lee@vortex.com",
+                    senderAlias: "Jenny Lee",
+                    displayOption: 1,
+                    content: 'Hi Alex<br><br>' +
+                    "Click the attachment to see my image! Amazing what AI can do nowadays, right?<br><br>" +
+                    'See you later,<br>' +
+                    'Jenny<br>' +
+                    '<span class="fake-attachment" data-popup-content="https://ethzurichenv.eu.qualtrics.com/ControlPanel/Graphic.php?IM=IM_669N8DzOzR1FfVJ"><span class="name">sleepy.jpg</span><span class="size">(0.2 MB)</span></span>'
+                },
+                3: {
+                    subject: "Meeting Notes from Yesterdays's Discussion", 
+                    sender: "jessica.huang@vortex.com",
+                    senderAlias: "Jessica Huang",
+                    displayOption: 1,
+                    content: "<p>Hi Team,<br><br>" +
+                            "I’m sharing the notes from our meeting with Orion Corporation last week. You can find the key points and action items below.<br><br>" +
+                            "Please review the attached document and let me know if you have any questions or need further clarification.<br><br>" +
+                            "Best regards,<br>" +
+                            "Jessica Huang<br>" +
+                            "Project Manager</p><br><br>" +
+                            "<span class=\"fake-attachment\"><span class=\"name\">meeting-notes-orion.pdf</span><span class=\"size\">(2.3 MB)</span></span>"
+                },
+                4: {
+                    subject: "My South Pole Marathon Adventure", 
+                    sender: "jjam@vortex.com",
+                    senderAlias: "Jamie Joyce",
+                    displayOption: 1,
+                    content: "Hey Team,<br><br>" +
+                            "Guess what? I’m running a marathon... at the South Pole! Yes, you heard that right—26.2 miles of pure, frozen adventure at the bottom of the world. No big deal, right? Just another day in the life of a self-proclaimed 'extreme athlete' (that’s me! ;)).<br><br>" +
+                            "I’ve been prepping for months, enduring early morning runs in the cold, and even testing out the latest thermal gear (which, by the way, makes me look like a high-tech snowman). But seriously, this marathon is going to be epic, and I’m determined to crush it with style.<br><br>" +
+                            "However, there’s just one small hiccup... running a marathon in Antarctica isn’t exactly a budget-friendly endeavor. I need a bit of help to make this frosty dream a reality. That’s where you come in!<br><br>" +
+                            "If you’re feeling generous and want to support my chilly escapade, just drop by my office with some cash. Every bit helps, and in return, I promise to regale you with tales of my heroic training (you might even get a sneak peek of my penguin fan club).<br><br>" +
+                            "Thanks in advance for helping me tackle the ultimate marathon. Let’s make this South Pole adventure one for the books!<br><br>" +
+                            "Cheers,<br>" +
+                            "Jamie ;)"
+                },
+                5: {
+                    subject: "Reminder: Scheduled IT System Maintenance", 
+                    sender: "it@vortex.com",
+                    senderAlias: "IT Services",
+                    displayOption: 1,
+                    content: "<p>Hi All,<br><br>" +
+                            "Please be aware that we will be performing scheduled maintenance on our IT systems later today.<br><br>" +
+                            "During this time, there will be intermittent outages affecting email and file access. We apologize for any inconvenience this may cause.<br><br>" +
+                            "Thank you for your understanding.<br><br>" +
+                            "Best regards,<br>" +
+                            "IT Services</p>"
+                },
+                6: {
+                    subject: "Update to Our Data Policy", 
+                    sender: "no-reply@venmo.com",
+                    senderAlias: "Venmo Alerts",
+                    displayOption: 1,
+                    content: 'Hello Alex,<br><br>' +
+                            'We are notifying you that we have revised our Data Policy. These revisions will take effect starting November 15, 2024.<br><br>' +
+                            'These updates are due to our integration with a new customer engagement platform. The main changes to the Data Policy include:' +
+                            '<ul>' +
+                            '<li>Explanation of when we rely on our legitimate interests to handle your personal information. This includes a new section on "Personalized Services" (refer to <b>"HOW WE UTILIZE YOUR DATA"</b>).</li>' +
+                            '<li>Details on when we require your consent to process your data, with additional examples such as handling electronic identification information (see <b>"HOW WE UTILIZE YOUR DATA"</b>).</li>' +
+                            '<li>More details regarding data retention to clarify our internal procedures (refer to <b>"DATA RETENTION"</b>).</li>' +
+                            '</ul>' +
+                            'You can review the updated Venmo Data Policy ' +
+                            '<span class="fake-link" title="https://venmo.com/datapolicy">here</span>.<br><br>' +
+                            'Best regards,<br>' +
+                            'Venmo Data Privacy Team'
+                },
+                7: {
+                    subject: "Reminder: Office Plant Watering Schedule", 
+                    sender: "green.team@vortex.com",
+                    senderAlias: "Green Team",
+                    displayOption: 1,
+                    content:  "<p>Hi All,<br><br>" +
+                            "Just a quick reminder that the office plant watering schedule has been updated. Please check the new schedule posted in the break room to see when it's your turn to water the plants.<br><br>" +
+                            "Let’s keep our office greenery thriving!<br><br>" +
+                            "Cheers,<br>" +
+                            "Green Team</p>"
+                },
+                8: {
+                    subject: "I lost my scarf", 
+                    sender: "jennifer.smith@vortex.com",
+                    senderAlias: "Jennifer Smith",
+                    displayOption: 1,
+                    content: "Hi Team,<br><br>" +
+                            "I hope you're all doing well! I’ve just realized that my favorite scarf is missing. It’s a special, very sentimental piece that I absolutely adore. I last saw it in the office, and I’m now frantically searching high and low.<br><br>" +
+                            "If anyone has seen a cozy, blue scarf lying around, please let me know immediately. I’m starting to think it might have sprouted legs and walked away on its own!<br><br>" +
+                            "Your help would be greatly appreciated. I’ll be eternally grateful and might even bake some cookies as a thank-you!<br><br>" +
+                            "Thanks so much,<br>" +
+                            "Jennifer<br>" +
+                            "CFO, Vortex<br>"
+                },
+                9: {
+                    subject: "Welcome Our New Team Member: Sarah Lee", 
+                    sender: "hr@vortex.com",
+                    senderAlias: "Vortex HR",
+                    displayOption: 1,
+                    content: "<p>Dear Team,<br><br>" +
+                            "We are excited to announce that Sarah Lee has joined our team as the new Marketing Coordinator.<br><br>" +
+                            "Sarah brings a wealth of experience in digital marketing and is enthusiastic about contributing to our projects. Please join us in welcoming her to the team.<br><br>" +
+                            "Sarah’s first day will be Monday, and she will be based in the Marketing Department.<br><br>" +
+                            "Best,<br>" +
+                            "HR Department</p>"
+                },
+                10: {
+                    subject: "The Clock Is Ticking", 
+                    sender: "mysterious@puzzles.xy",
+                    senderAlias: "The Enigma",
+                    displayOption: 1,
+                    content: "<p>Greetings,<br><br>" +
+                            "The time is nigh. When the clock strikes twelve, seek the forgotten key. In shadows, answers lie.<br><br>" +
+                            "Here is a puzzle for you to solve:<br><br>" +
+                            "<b>What has keys but can't open locks, has space but no room, and you can enter but not go inside?</b><br><br>" +
+                            "The Enigma</p>"
+                },
+                11: {
+                    subject: "This your scarf?", 
+                    sender: "jenny.lee@vortex.com",
+                    senderAlias: "Jenny Lee",
+                    displayOption: 1,
+                    content: "Hey Alex,<br><br>" +
+                            "I found a blue scarf in the break room. Is it yours?<br><br>" +
+                            "Cheers,<br>" +
+                            "Jenny<br><br>" +
+                            "PS: We should go get coffee sometime!"
+                },
+                12: {
+                    subject: "IMPORTANT: Health Safety EMERGENCY", 
+                    sender: "medical-alerts@gmail.com",
+                    senderAlias: "WHO Alerts",
+                    displayOption: 1,
+                    content: 'We need to inform you about a recent health incident in your city.<br><br>' +
+                            'There has been a potential exposure to a highly contagious flu variant within our team. As a precaution, we are conducting detailed contact tracing to identify anyone who may be at risk.<br><br>' +
+                            'We urge you to check if you have interacted with the affected individual. Please visit our information page to learn more and report any contact:<br>' +
+                            '<span class="fake-link" title="https://health-emergencies-who.com/information/">Access Contact Report</span><br><br>' +
+                            'Your prompt response is essential for the safety of everyone.<br><br>' +
+                            'If you have any questions, please contact our health department!' +
+                            'Thank you for your cooperation,<br>' +
+                            'WHO Alrets Team'
+                },
+                13: {
+                    subject: "The Clock Strikes Twelve", 
+                    sender: "mysterious@puzzles.xyz",
+                    senderAlias: "The Enigma",
+                    displayOption: 1,
+                    content: "<p>Greetings,<br><br>" +
+                            "The answer was: A keyboard.<br><br>" +
+                            "The Enigma</p>"
+                },
+                14: {
+                    subject: "Scarf <3", 
+                    sender: "jennifer.smith@vortex.com",
+                    senderAlias: "Jennifer Smith",
+                    displayOption: 1,
+                    content: "I just wanted to send out a huge thank you to everyone who participated in the scarf search! Your amazing efforts and eagle-eyed observations were truly appreciated. It looks like the mystery of the missing scarf has been solved (and hopefully, no more scarves will pull a disappearing act anytime soon)." +
+                            "Thanks for making this an impromptu scavenger hunt with such enthusiasm. While I got an email tip, everyone is a champion of the search party!<br><br>" +
+                            "Needless to say, tomorrow will be a cookie day!<br><br>" +
+                            "All the best,<br>" +
+                            "Jennifer<br>" +
+                            "CFO, Vortex<br>"
+                },
+                15: {
+                    subject: "Reminder: Office Tidy-Up for Next Week’s Event    ", 
+                    sender: "evan.rose@vortex.com",
+                    senderAlias: "Evan Rose",
+                    displayOption: 1,
+                    content: "Hello Team,<br><br>" +
+                            "As you may be aware, we have an important event scheduled for next week. To ensure that our office makes the best impression, we would like to remind everyone to tidy up their workspaces. A clean office is not only professional but also a nice environment for everyone—imagine that!<br><br>" +
+                            "In particular, we would like to draw attention to B Floor. It would be *especially* appreciated if those of you on that floor could make an extra effort to clear away the clutter. We’ve noticed a few areas that could use a little more love and care. After all, we wouldn’t want our guests to think we’re living in a perpetual state of chaos.<br><br>" +
+                            "Please remember to dispose of any old papers, take home any food wrappers, and generally make your space presentable. We’re sure you’ll find the effort to be quite rewarding. And if you need cleaning supplies, don’t hesitate to ask. We’re here to support your journey to a cleaner workspace.<br><br>" +
+                            "Thank you in advance for your cooperation. Let’s make sure our office shines bright next week!<br><br>" +
+                            "Best regards,<br>" +
+                            "Evan Rose, Office Admin Team"
+                },
+                16: {
+                    subject: "Join Us for an Exclusive Webinar on Market Trends", 
+                    sender: "webinars@marketinsights.com",
+                    senderAlias: "Market Insights Team",
+                    displayOption: 1,
+                    content: "<p>Dear Colleagues,<br><br>" +
+                            "We are excited to invite you to our upcoming webinar on Market Trends and Insights. The webinar will take place on September 15th at 2:00 PM.<br><br>" +
+                            "Click the link below to register:<br>" +
+                            '<span class="fake-link" title="https://marketinsights.com/webinar">Register Here</span><br><br>' +
+                            "Looking forward to your participation!<br><br>" +
+                            "Best,<br>" +
+                            "Market Insights Team</p>"
+                },
+                17: {
+                    subject: "Please read my draft", 
+                    sender: "rossi-ceo@vortex.co",
+                    senderAlias: "Luca Rossi",
+                    displayOption: 1,
+                    content: 'Hey Alex, Luca here,<br><br>' +
+                     'I quickly put together this overview of your project. Could you briefly check to see it is all in order?<br><br>' +
+                     'Best,<br>' +
+                     'Luca Rossi<br>' +
+                     'CEO<br><br>' +
+                     '<span class="fake-attachment"><span class="name">project-overview.docx</span><span class="size">(0.1 MB)</span></span>'
+                },
+                18: {
+                    subject: "Check Out My Cat!", 
+                    sender: "akila.nkosi@vortex.com",
+                    senderAlias: "Akila Nkosi",
+                    displayOption: 1,
+                    content: '<p>Hi Team,<br><br>' +
+                            'I just had to share this adorable picture of my cat, Simba. Isn’t he the cutest? He’s been taking his nap on my desk, and I couldn’t resist snapping a pic. Hope this brightens your day!<br><br>' +
+                            '<span class="fake-attachment" data-popup-content="https://ethzurichenv.eu.qualtrics.com/ControlPanel/Graphic.php?IM=IM_KEev2k6CT7hhNDN"><span class="name">sleepy.jpg</span><span class="size">(0.2 MB)</span></span>' +
+                            '</p>'
+                },
+                19: {
+                    subject: "Reminder: Submit Your Expense Reports", 
+                    sender: "finance@vortex.com",
+                    senderAlias: "Finance Team",
+                    displayOption: 1,
+                    content: "<p>Hello everyone,<br><br>" +
+                            "This is a friendly reminder to submit your expense reports for July by the end of the week.<br><br>" +
+                            "Thank you,<br>" +
+                            "The Finance Team</p>"
+                },
+                20: {
+                    subject: "Re: Check Out My Cat!", 
+                    sender: "arjun.singh@vortex.com",
+                    senderAlias: "Arjun Singh",
+                    displayOption: 1,
+                    content: '<p>Hey Akila,<br><br>' +
+                            'That’s an adorable cat! I just had to share this picture of my dog, Rocky. He’s enjoying his favorite toy and looking pretty proud of himself. Hope you enjoy this as much as I enjoyed Simba!<br><br>' +
+                            '<span class="fake-attachment" data-popup-content="https://ethzurichenv.eu.qualtrics.com/ControlPanel/Graphic.php?IM=IM_HhERhFTmHhzeY4D"><span class="name">rockyyy.jpg</span><span class="size">(0.3 MB)</span></span>' +
+                            '</p>'
+                },
+                21: {
+                    subject: "Re: Re: Check Out My Cat!", 
+                    sender: "Mao.ling@vortex.com",
+                    senderAlias: "Mao Ling",
+                    displayOption: 1,
+                    content: '<p>Not bad, but my cat is cooler!<br><br>' +
+                            'We should have a pet show-down sometime...<br><br>' +
+                            '<span class="fake-attachment" data-popup-content="https://ethzurichenv.eu.qualtrics.com/ControlPanel/Graphic.php?IM=IM_mSxjHtElH19W5l7"><span class="name">coolangrycat.jpg</span><span class="size">(0.3 MB)</span></span>' +
+                            '</p>'
+                },
+                22: {
+                    subject: "Boost Your Salary with Our Proven Strategy!", 
+                    sender: "salary@booststrategy.com",
+                    senderAlias: "Boost Strategy Team",
+                    displayOption: 1, 
+                    content: "<p>Hello,<br><br>" +
+                            "Unsatisfied with your current salary? Looking to increase it? Our proven strategy has helped many like you to achieve incredible results. Contact us to learn more and get started today!<br><br>" +
+                            "Best,<br>" +
+                            "Boost Strategy Team</p>"
+                },
+                23: {
+                    subject: "Thoughts on the New Process", 
+                    sender: "michael.ng@vortex.com",
+                    senderAlias: "Michael Ng",
+                    displayOption: 1,
+                    content: "<p>Hi hi,<br><br>" +
+                            "I’ve been mulling over the new process we’re supposed to adopt, and a few things have been bugging me. First off, do you remember when we tried something similar last year? It didn’t quite work out the way we expected, right? Maybe it was just a timing issue, or maybe we didn’t have the right tools back then. Speaking of tools, have you heard anything about that new software the IT department is testing? I think it could really streamline what we’re trying to do. Also, I’ve been thinking about the onboarding process for new team members. It feels a bit clunky, don’t you think? We should definitely bring this up at the next meeting.<br><br>" +
+                            "Oh, by the way, I was chatting with Linda from HR yesterday, and she mentioned something about a potential revamp of the performance review process. I didn’t get all the details, but it sounds like they want to make it more ‘dynamic’ or something. Not sure what that means exactly, but I hope it doesn’t involve more paperwork. You know how these things go—what starts as a ‘simple update’ often turns into a whole new set of forms to fill out. Anyway, we should probably keep an eye on that too, in case it impacts our team.<br><br>" +
+                            "Also, while we’re on the subject of processes, have you noticed how long it’s taking for some of the approvals to come through lately? I mean, I get that everyone’s busy, but it seems like there’s been a bottleneck somewhere. Maybe we should look into that, or at least figure out if there’s a way to speed things up. I was thinking we could suggest a more automated workflow—nothing too fancy, just something to keep things moving. Speaking of which, did you ever get a chance to look at that email from the procurement team? They’ve been asking about the new vendor contracts, and I’m not sure if it’s something we need to worry about now or later.<br><br>" +
+                            "Anyway, sorry for rambling on. Just had a lot on my mind lately. Oh, and I finally tried that new coffee machine in the break room—terrible! I don’t know who thought that was a good idea, but we might need to stage a mini-revolt to get the old one back. But I digress... Let’s catch up soon to discuss all this. Maybe over a coffee, but not from that machine, obviously.<br><br>" +
+                            "Best,<br>" +
+                            "Michael</p>"
+                },
+                24: {
+                    subject: "Cats and scarves", 
+                    sender: "rossi@vortex.com",
+                    senderAlias: "Luca Rossi",
+                    displayOption: 1,
+                    content: "<p>Hi Team,<br><br>" +
+                            "I’ve enjoyed seeing the cat photos, scarf updates, and cookie ideas. However, we’re getting a bit too much email spam. Let’s focus on our projects.<br><br>" +
+                            "But if we stay on track and achieve our goals, we might celebrate with a cookie and pets party next month.<br><br>" +
+                            "Best,<br>" +
+                            "Luca Rossi<br>" +
+                            "CEO</p><br><br>"
+                },
+                25: {
+                    subject: "Hey, where's the meeting notes?", 
+                    sender: "jtmiller@vortex.com",
+                    senderAlias: "J.T. Miller",
+                    displayOption: 1,
+                    content: "Did Jessica already send out the notes?<br><br>" +
+                            "Best,<br>" +
+                            "Miller<br>"
+                },
+                26: {
+                    subject: "Did You Hear About This?", 
+                    sender: "jane.kim@microservices.com",
+                    senderAlias: "Jane Kim",
+                    displayOption: 1, 
+                    content: "<p>Hey Alex,<br><br>" +
+                            "I just had to tell you this—I ran into someone from HR at my company during lunch, and they mentioned that there’s going to be a big reorganization soon. Apparently, they’re merging two departments, and no one knows who’s going where yet. It’s causing a bit of a panic! And get this—they’re thinking of bringing in a new head of operations, but no one’s sure who it’ll be. The rumor mill is going wild! Anyway, I thought you’d appreciate the scoop. Keep me posted on what’s happening on your end.<br><br>" +
+                            "Best,<br>" +
+                            "Jane</p>"
+                },
+                27: {
+                    subject: "The hidden path", 
+                    sender: "mysterious@puzzles.xyz",
+                    senderAlias: "The Enigma",
+                    displayOption: 1,
+                    content: "<p>Greetings,<br><br>" +
+                            "Time is a river, but only those who understand its flow can find the hidden truth.<br><br>" +
+                            "Your puzzle is this:<br><br>" +
+                            "<b>The more you take, the more you leave behind. What am I?</b><br><br>" +
+                            "The Enigma</p>"
+                },
+                28: {
+                    subject: "Parking Spaces Available", 
+                    sender: "facilities@vortex.com",
+                    senderAlias: "Facility Services",
+                    displayOption: 1,
+                    content: "<p>Hello everyone,<br><br>" +
+                            "Thanks to so many working from home now, we actually have a few parking spaces available in the underground garage. If you’re interested in securing a spot, please contact us ASAP.<br><br>" +
+                            "Thanks,<br>" +
+                            "Facility Services</p>"
+                },
+                29: {
+                    subject: "Could you test this for me?", 
+                    sender: "emily.rose@vortx.com",
+                    senderAlias: "Emily Rose",
+                    displayOption: 1,
+                    content: 'Hey Alex,' +
+                    "It looks like there is an issue with your payslip?<br><br>" +
+                    "Please log in here to verify everything is in order:" +
+                    '<span class="fake-link" title="https://access.votrex.com/login/finance-and-controlling.html/payslip/">https://access.vortex.com/login/finance-and-controlling.html/payslip/</span>' +
+                    "Thanks,<br>" + 
+                    "Emily Rose,<br>" +
+                    "HR Payroll Deputy Head</p>"
+                },
+                30: {
+                    subject: "The end", 
+                    sender: "mysterious@puzzles.xyz",
+                    senderAlias: "The Enigma",
+                    displayOption: 1,
+                    content: "<p>Greetings,<br><br>" +
+                            "The answer was: Footsteps.<br><br>" +
+                            "Each step taken leaves an imprint, a memory in the sands of time. The journey continues...<br><br>" +
+                            "The Enigma</p>"
+                },
+            };
+
+            // Save the emails into localStorage
+            console.log('saving emails')
+            localStorage.setItem('emails', JSON.stringify(emails));
+        })();
+    </script>
+</body>
+</html>

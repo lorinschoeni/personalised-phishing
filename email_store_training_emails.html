@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Save Emails to Local Storage</title>
+</head>
+<body>
+    <script>
+        // why use a DB when you can hardcode all content
+window.specialEmails = [
+    {
+        subject: "Free StreamStar Pro Trial",
+        sender: "no-reply@streamstar.net",
+        senderAlias: "StreamStar Support",
+        displayOption: 1,
+        content: '<b>Dear Customer,</b><br><br>' +
+             'Congratulations! You’ve been selected to receive a free trial of our premium Pro Streaming Service. This is a limited-time offer that gives you full access to our service for 30 days at no cost, including our premium productions.<br><br>' +
+             '<span class="fake-link" title="https://streamstar.net/pro/signup">Sign Up for Your Free Trial</span><br><br>' +
+             'Take advantage of this special opportunity to experience our top-rated service. No obligations, no credit card required.<br><br>' +
+             'Best,<br>' +
+             'Your StreamStar Team<br><br>' +
+             'P.S. If you’d prefer not to receive these offers, you can <span class="fake-link" title="http://streamstar.net/unsubscribe">unsubscribe here</span>.',
+             specialText: "This email is sending you an attractive offer.<br>" + 
+                    "Do you think it is just trying to entice you? Or would it be dangerous to click on anything?<br>" + 
+                    "Please make a selection below.",
+        options: ["The 'From:' sender is suspicious", "This email just looks like random spam", "Report email as phishing!"],
+        responses: [
+            {
+                text: "The sender information in the 'From:' field does not seem inherently suspicious.<br>" + 
+                    "The name matches all other information and no-reply is a commonly used way of indicating that the email should not be replied to." + 
+                    "Many companies send out advertisements to existing customers or use marketing services to target people with offers.",
+                correct: "no",
+                overlay: {
+                    text: "There is nothing inherently suspicious about the sender address.",
+                    position: { top: "16%", left: "28%" },
+                },
+                highlightClass: "highlight-sender"
+            },
+            {
+                text: "Correct!<br>" + 
+                    "While this email might not be desired, there is no clear indication of anything suspicious.<br>" + 
+                    "Many companies send out advertisements to existing customers or use marketing services to target people with offers.",
+                correct: "yes",
+                overlay: {
+                    text: "",
+                    position: { top: "99%", left: "99%" },
+                },
+                highlightClass: ""
+            },
+            {
+                text: "It is certainly fine to report emails if you're unsure. However, in this case, the email looks just like normal advertisement.<br>" + 
+                    "Many companies send out advertisements to existing customers or use marketing services to target people with offers.",
+                correct: "no",
+                overlay: {
+                    text: "",
+                    position: { top: "99%", left: "99%" },
+                },
+                highlightClass: "highlight-line-1"
+            }
+        ]
+    },
+    {
+        subject: "Immediate Action Required: Account Suspension Alert!",
+        sender: "support@capitalbank.com",
+        senderAlias: "Capitol Bank Support",
+        displayOption: 1,
+        content: '<b>Dear Alex Green,</b><br><br>' +
+             'This is an urgent notification regarding your account. We have detected unusual activity and need to verify your identity immediately. Failure to do so within the next 2 hours will result in the suspension of your account for security purposes.<br><br>' +
+             '<span class="fake-link highlight-line-1" title="http://capital-bank.com/verify-account">Verify Your Account Now</span><br><br>' +
+             'Do not ignore this message. Your account security is at risk.<br><br>' +
+             'Sincerely,<br>' +
+             'Banking Service Support Team<br><br>',
+        specialText: "This email is alerting you to a potential account suspension.<br>" + 
+                    "Which one of the options seems most likely?",
+        options: ["This email is phishing", "It just looks like random spam", "This email looks legitimate"],
+        responses: [
+            {
+                text: "Correct! The email tries to create a lot of pressure by invoking urgency and fear in the recipient<br>" +
+                    "The goal is to catch the recipient offguard and build additional pressure. In such a state, you could miss the URL being fake.<br>" + 
+                    "You can often spot phishing emails simply by looking at how much they try to manipulate you.<br>",
+                correct: "yes",
+                overlay: {
+                    text: "The actual URL of the link differs from the sender domain.<br>" + 
+                    "Phishers often try to abuse minor nuances and details that could be missed at a glance.<br>",
+                    position: { top: "38%", left: "28%" },
+                },
+                highlightClass: "highlight-line-1"            
+            },
+            {
+                text: "This email certainly does not seem legitimate, but its nature is more dangerous than mere spam." + 
+                    "After all, the sender included your email in the body, indicating this was of a more targeted nature.<br><br>" +
+                    "The email tries to create a lot of pressure by invoking urgency and fear in the recipient.<br>" +
+                    "The goal is to catch the recipient offguard and build additional pressure. In such a state, you could miss the URL being fake.<br>" + 
+                    "You can often spot phishing emails simply by looking at how much they try to manipulate you.",
+                correct: "no",
+                overlay: {
+                    text: "The actual URL of the link differs from the sender domain.<br>" + 
+                    "Phishers often try to abuse minor nuances and details that could be missed at a glance.<br>",
+                    position: { top: "21%", left: "25%" },
+                },
+                highlightClass: "highlight-line-1"
+            },
+            {
+                text: "It would be very dangerous to trust this email and click on the link!<br>" + 
+                    "There are inconsistencies between the URL of the link, the sender domain, and the alias the sender chose to use.<br><br>" +
+                    "The email tries to create a lot of pressure by invoking urgency and fear in the recipient.<br>" +
+                    "The goal is to catch the recipient offguard and build additional pressure. In such a state, you could miss the URL being fake.<br>" + 
+                    "You can often spot phishing emails simply by looking at how much they try to manipulate you.",
+                correct: "no",
+                overlay: {
+                    text: "The actual URL of the link differs from the sender domain.<br>" + 
+                    "Phishers often try to abuse minor nuances and details that could be missed at a glance.<br>",
+                    position: { top: "21%", left: "25%" },
+                },
+                highlightClass: "highlight-line-1"
+            }
+        ]
+    },
+    {
+        subject: "Recap of the Recent Strategy Review Session",
+        sender: "jdoe@greenleaf.com",
+        senderAlias: "Jessica Doe",
+        displayOption: 1,
+        content: 'Hello Team,<br><br>' +
+             'We recently concluded a strategy review session at Greenleaf and Vortex.<br><br>' +
+             'For those who couldn’t make it, please find the summary of the discussion attached.<br><br>' +
+             'We will keep you informed about the next steps and upcoming initiatives in our next update.<br><br>' +
+             'Best regards,<br>' +
+             'Jessica Doe<br>' +
+             'Strategy Director, GreenLeaf<br>' +
+             '<span class="fake-attachment highlight-line-1"><span class="name">strategy_review_summary.pdf</span><span class="size">(10.4 MB)</span></span>',
+        specialText: "In this case, the email has an attachment." + 
+                    "Which of the following option seems most prudent?",
+        options: ["The email subject is trying to trick me", "The attachment seems dangerous", "This email looks legitimate"],
+        responses: [
+            {
+                text: "Not quite. There is nothing particularly unusual about the subject.<br>" + 
+                    "This looks just like a person sending you a PDF summary.<br>" + 
+                    "While some care should always be taken in opening PDFs, there is no indication that this is phishing.",
+                correct: "no",
+                overlay: {
+                    text: "There is nothing particularly unusual about the subject.",
+                    position: { top: "12%", left: "19%" },
+                },
+                highlightClass: "highlight-subject"
+            },
+            {
+                text: "Hold on! The attachment seems fine.<br>" + 
+                "This looks just like a person sending you a PDF summary.<br>" + 
+                "While some care should always be taken in opening PDFs, there is no indication that this is phishing.",
+                correct: "no",
+                overlay: {
+                    text: "This attachment looks just fine!",
+                    position: { top: "25%", left: "25%" },
+                },
+                highlightClass: "highlight-line-1"
+            },
+            {
+                text: "Correct! This email is just fine.<br>" + 
+                    "This looks just like a person sending you a PDF summary.<br>" + 
+                    "While some care should always be taken in opening PDFs, there is no indication that this is phishing.",
+                correct: "yes",
+                overlay: {
+                    text: "<br>" + 
+                    "",
+                    position: { top: "99%", left: "99%" },
+                },
+                highlightClass: ""
+            }
+        ]
+    },
+    {
+        subject: "Discover the Secret to Better Sleep – Free Report Inside!",
+        sender: "info@sleepexpertadvice.com",
+        senderAlias: "Sleep Expert",
+        displayOption: 1,
+        content: '<b>Hi there,</b><br><br>' +
+             'Are you struggling with sleep issues? Our free report reveals expert tips and strategies for achieving better sleep. Learn how to improve your sleep quality and wake up feeling refreshed.<br><br>' +
+             '<span class="fake-link highlight-line-1" title="https://sleepexpertadvice.com/free-report">Download Your Free Report</span><br><br>' +
+             'Get your copy now and start enjoying the benefits of a good night’s sleep.<br><br>' +
+             'Best wishes,<br>' +
+             'Sleep Expert Advice Team<br><br>' +
+             '<span class="fake-link" title="https://sleepexpertadvice.com/unsubscribe">Unsubscribe here</span> if you don’t want to receive further emails.',
+        specialText: "Should you click on that link?",
+        options: ["The link URL looks fine, so there can be no danger", "This email looks like spam", "This is definitely phishing"],
+        responses: [
+            {
+                text: "Be careful! That link by itself doesn't seem dangerous, but care should always be taken when responding to unsolicited offers.<br>" + 
+                    "While this case looks more like spam, the free report might not be safe to download.<br>",
+                correct: "no",
+                overlay: {
+                    text: "This link by itself does not seem dangerous.<br>" + 
+                    "However, care should be taken when opening unsolicited links from services you do not know.",
+                    position: { top: "29%", left: "26%" },
+                },
+                highlightClass: "highlight-line-1"
+            },
+            {
+                text: "Correct! It does look like spam<br>" + 
+                    "The content and tone of the email, with a generic offer of a 'free report' and a vague promise of better sleep, are common characteristics of spam.<br>" + 
+                    "The unfamiliar sender and unsolicited nature of the email further suggest that this is likely spam.<br>",
+                correct: "yes",
+                overlay: {
+                    text: "<br>" + 
+                    "",
+                    position: { top: "99%", left: "99%" },
+                },
+                highlightClass: ""
+            },
+            {
+                text: "You’re on the right track, but while this email could be a phishing attempt, it’s more likely to be spam. <br>" + 
+                    "Phishing usually involves attempts to steal personal information or credentials, whereas this email appears to be trying to lure you into clicking a link for promotional purposes.<br>" + 
+                    "Either way, it’s best not to interact with the links.",
+                correct: "no",
+                overlay: {
+                    text: "<br>" + 
+                    "",
+                    position: { top: "99%", left: "99%" },
+                },
+                highlightClass: ""
+            }
+        ]
+    },
+    {
+        subject: "Company Policy Update",
+        sender: "no-reply@vortex-hr.com",
+        senderAlias: "Company HR",
+        displayOption: 1,
+        content: '<p>Hello,<br><br>' +
+             'We have recently updated our company policies. Please find the updated policy document attached. Review it at your convenience.<br><br>' +
+             'If you have any questions, feel free to reach out to HR.<br><br>' +
+             'Thank you,<br>' +
+             'Human Resources Team</p><br>' +
+             '<span class="fake-attachment highlight-line-1"><span class="name">CompanyPolicyUpdate.zip</span><span class="size">(1.2 MB)</span></span>',
+        specialText: "In this case, you are sent a document.<br>" + 
+                    "Which of the following considerations seem correct?",
+        options: ["The attachment seems dangerous", "The sender looks unusual", "This email looks legitimate"],
+        responses: [
+            {
+                text: "Good observation! The attachment is a ZIP file, which is often used to compress files for easier distribution.<br>" + 
+                    "However, ZIP files can also contain malware, especially when sent unsolicited.<br>" + 
+                    "Always be cautious with attachments like these, especially if you weren’t expecting them.",
+                correct: "yes",
+                overlay: {
+                    text: "This attachment is a .zip, which can contain dangerous, hidden elements.<br>" + 
+                    "This is especially suspicious, as the document could just be sent as a PDF file.",
+                    position: { top: "40%", left: "25%" },
+                },
+                highlightClass: "highlight-line-1"
+            },
+            {
+                text: "Correct! The sender’s email address, 'no-reply@vortex-hr.com,' doesn’t match a typical company domain.<br>" + 
+                    "If your company’s HR department usually uses a different domain, this could be a sign of a phishing attempt.<br>" + 
+                    "Always verify the sender's address closely before interacting with the email.",
+                correct: "yes",
+                overlay: {
+                    text: "no-reply@vortex-hr.com does not match the usual 'vortex.com' domain name.",
+                    position: { top: "22%", left: "25%" },
+                },
+                highlightClass: "highlight-sender"
+            },
+            {
+                text: "Be careful! While the email appears professional, there are red flags like the unfamiliar sender domain and the ZIP file attachment.<br>" +  
+                    "It’s always important to double-check unexpected emails, especially those asking you to open attachments or provide sensitive information.",
+                correct: "no",
+                overlay: {
+                    text: "<br>" + 
+                    "",
+                    position: { top: "99%", left: "99%" },
+                },
+                highlightClass: ""
+            }
+        ]
+    },
+    {
+        subject: "Client Project Update",
+        sender: "james.keller@vortex.com",
+        senderAlias: "James Keller",
+        displayOption: 1,
+        content: '<b>Hi All,</b><br><br>' +
+             'I wanted to provide a brief update on the client project we’re working on. Attached is the latest progress report and next steps.<br><br>' +
+             'Please review the report and prepare for our project status meeting on Monday.<br><br>' +
+             'Let me know if you have any questions or need further information.<br><br>' +
+             'Best regards,<br>' +
+             'James Keller<br>' +
+             'Client Services Manager<br>' +
+             'Vortex<br><br>' +
+             '<span class="fake-attachment"><span class="name">Client_Project_Progress_Report.pdf</span><span class="size">(3.5 MB)</span></span>',
+        specialText: "Another document. Could you open it?",
+        options: ["This email is definitely phishing", "This email looks like random spam", "This email looks legitimate"],
+        responses: [
+            {
+                text: "Not quite. While it’s important to be cautious, this email includes clear context, a familiar sender, and a legitimate-sounding project update.<br>" + 
+                    "There are no obvious red flags like strange attachments or unusual requests.<br>" + 
+                    "This seems to be a normal work-related communication.",
+                correct: "no",
+                overlay: {
+                    text: "<br>" + 
+                    "",
+                    position: { top: "99%", left: "99%" },
+                },
+                highlightClass: ""
+            },
+            {
+                text: "Incorrect. The email provides specific information about a client project, includes a relevant attachment, and comes from a known colleague.<br>" + 
+                    "These details make it unlikely to be random spam. Always consider the context and sender when evaluating emails.",
+                correct: "no",
+                overlay: {
+                    text: "The sender seems to be a colleague from the same organisation.",
+                    position: { top: "20%", left: "25%" },
+                },
+                highlightClass: "highlight-sender"
+            },
+            {
+                text: "Correct! The email includes a clear subject, comes from a known colleague, and contains relevant information about a project you’re working on. The attachment is appropriately named and sized for a work-related document. Everything about this email suggests it’s legitimate.<br>",
+                correct: "yes",
+                overlay: {
+                    text: "<br>" + 
+                    "",
+                    position: { top: "99%", left: "99%" },
+                },
+                highlightClass: ""
+            }
+        ]
+    },
+    {
+        subject: "Can you check this out?",
+        sender: "susan.martin@vortex.com",
+        senderAlias: "Susan Martin",
+        displayOption: 1,
+        content: 'Hey Alex,<br>' +
+            'I just got this paperwork, please deal with it.<br>' +
+            '<span class="highlight-line-1"><p>---------- Forwarded message ----------<br>' +
+             'From: Michael Johnson &lt;m.johnson@techsolutions.xyz&gt;<br>' +
+             'Date: Fri, Aug 23, 2024 at 2:30 PM<br>' +
+             'Subject: Urgent Security Patch Installation<br>' +
+             'To: susan.martin@vortex.com<br>' +
+             '</p>' +
+             '<p>Hello Susan,<br>' +
+             'We have received an important document that needs your immediate attention. Please open the attached file to review the details.<br>' +
+             'This document contains critical information regarding our recent updates. Make sure to read it carefully and let us know if you have any questions.<br><br>' +
+             'Best regards,<br>' +
+             'Michael Johnson<br>' +
+             'IT Support Team<br>' +
+             'Tech Solutions</p></span><br><br>' +
+             '<span class="fake-attachment"><span class="name">important_update_details.docx</span><span class="size">(12.3 MB)</span></span>',
+        specialText: "Which judgement is most appropriate?",
+        options: ["This email is phishing!", "The attachment looks dangerous", "The sender is from my organisation, so it's safe"],
+        responses: [
+            {
+                text: "Good catch! Even though the sender is a colleague at the company, the email content itself was forwarded.<br>" + 
+                    "The email shows all classical signs of phishing. It tries to create pressure, is sent by a suspicious domain name, and comes with an unusual request to open a word document.<br>" + 
+                    "It would be a good idea to report and delete such an email.",
+                correct: "yes",
+                overlay: {
+                    text: "<br>" + 
+                    "",
+                    position: { top: "99%", left: "99%" },
+                },
+                highlightClass: ""
+            },
+            {
+                text: "Correct! The attachment is a .docx file, which can be used to deliver malware.<br>" + 
+                    "The email tries to create a lot of pressure for an unreasonable request. But why would you have to open and read a word document?<br>" + 
+                    "The attachment is very likely dangerous!",
+                correct: "yes",
+                overlay: {
+                    text: "The size of the file (12.3 MB) is unusually large for a text document, which is suspicious.",
+                    position: { top: "55%", left: "32%" },
+                },
+                highlightClass: "highlight-line-1"
+            },
+            {
+                text: "Be careful!<br>" + 
+                    "The email might be forwarded by a colleague in the same organisation, but the original email was sent by someone else. The forwarded content is therefore coming from an unknown sources.<br>" + 
+                    "The forwarded text tries to be pressure the recipient into an unreasonable request. Opening the attachment might be dangerous.",
+                correct: "no",
+                overlay: {
+                    text: "This forwarded message seems very dangerous." + 
+                    "The attachment should not",
+                    position: { top: "18%", left: "18%" },
+                },
+                highlightClass: "highlight-line-1"
+            }
+        ]
+    },
+    {
+        subject: "Urgent Notice: Unusual Activity Detected",
+        sender: "paypal-alerts@gmail.com",
+        senderAlias: "PayPal",
+        displayOption: 1,
+        content: '<b>Dear Customer,</b><br><br>' +
+             'We have detected unusual activity on your account and require immediate verification of your details. Please follow this link and provide your information to secure your account.<br><br>' +
+             '<span class="fake-link highlight-line-1" title="https://paypal.security-service.com/securelogin/">Secure Your Acount</span><br><br>' +
+             'This action is necessary to prevent any unauthorized transactions.<br><br>' +
+             'Thank you,<br>' +
+             'PayPal Security Team<br>',
+        specialText: "Should you open the attachment?",
+        options: ["The email sender is dangerous", "This seems fine", "The link seems deceptive"],
+        responses: [
+            {
+                text: "Correct! PayPal’s official emails should come from a domain associated with PayPal, such as @paypal.com.<br>" + 
+                    " The use of a Gmail address instead of an official PayPal domain is a major red flag, as legitimate companies rarely use free email services like Gmail for official communications.",
+                correct: "yes",
+                overlay: {
+                    text: "An email from a Gmail address claiming to be from PayPal is likely to be a phishing attempt aimed at stealing personal information or login credentials.",
+                    position: { top: "20%", left: "20%" },
+                },
+                highlightClass: "highlight-sender"
+            },
+            {
+                text: "It's important to be cautious with emails and links that don’t come from official domains." + 
+                    "The link uses a subdomain and domain that don’t match PayPal’s official site, and the email address uses a Gmail account instead of PayPal's domain. <br>" + 
+                    "These discrepancies suggest that the communication could be a phishing attempt.",
+                correct: "no",
+                overlay: {
+                    text: "<br>" + 
+                    "",
+                    position: { top: "99%", left: "99%" },
+                },
+                highlightClass: ""
+            },
+            {
+                text: "Correct. The link uses a suspicious URl. security-service.com is the actual domain, and paypal is just a subdomain. This is a common tactic in phishing to make the URL look legitimate, but it’s actually a completely different website.<br>" + 
+                    "The use of a hyphenated domain like security-service is unusual for major companies. Well-known companies like PayPal typically use clean, straightforward domains without unnecessary hyphens or additional words.", 
+                correct: "yes",
+                overlay: {
+                    text: "The /securelogin/ path is common in phishing URLs to create a sense of urgency or security.<br>" + 
+                    "Scammers use such terms to trick users into thinking they need to log in to secure their account.",
+                    position: { top: "35", left: "35" },
+                },
+                highlightClass: "highlight-line-1"
+            }
+        ]
+    }
+];
+        // save it and then forget
+        localStorage.setItem('specialEmails', JSON.stringify(specialEmails));
+
+        // but don't forget to disable this live
+        console.log('Emails saved to localStorage.');
+    </script>
+</body>
+</html>

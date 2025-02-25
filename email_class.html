@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+body {
+    font-family: 'Google Sans', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f1f3f4;
+}
+
+#email-list {
+    border: 1px solid #ccc;
+    padding: 10px 20px;
+    margin: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+}
+
+#email-list p:hover, .email_selected {
+    background-color: #f8f9fa;
+}
+
+#email-display {
+    display: none;
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: none;
+    border-left: none;
+    border-right: none;
+}
+
+.email_unread {
+    font-weight: bold;
+    background-color: #f0f0f0;
+}
+
+.fake-link {
+    color: #1a73e8;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.fake-link:hover {
+    text-decoration: none;
+}
+
+button {
+    background-color: #1a73e8;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #2b7de9;
+}
+
+p {
+    line-height: 1.6;
+}
+
+#email-list p {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#email-list p:hover {
+    background-color: #ddd;
+}
+
+.fake-attachment {
+    display: inline-block;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 10px;
+    background-color: #e8eaed;
+    text-decoration: none;
+    color: #333;
+    font-size: 0.8em;
+    line-height: 1.4;
+}
+
+.fake-attachment:before {
+    content: "📎";
+    margin-right: 5px;
+    font-size: 1.2em;
+}
+
+.fake-attachment .name {
+    font-weight: bold;
+    margin-right: 5px;
+    color: #5f6368;
+}
+
+.fake-attachment .size {
+    color: #666;
+    color: #5f6368;
+}
+
+.sender-option1 {
+    font-weight: normal;
+}
+
+.sender-option1 .email-address {
+    color: #888;
+    font-size: 0.9em;
+}
+
+.email-sender {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    font-weight: normal;
+}
+
+.email-sender:hover {
+    text-shadow: 0 0 1px #1a73e8;
+}
+
+.email-sender .tooltip {
+    visibility: hidden;
+    min-width: 200px;
+    background-color: #f9f9f9;
+    color: #333;
+    text-align: left;
+    border-radius: 5px;
+    padding: 10px;
+    position: absolute;
+    z-index: 1;
+    top: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.9em;
+    white-space: nowrap;
+    text-shadow: none; 
+    font-weight: bold; 
+    left: 60%; 
+    text-align: center;
+}
+
+.email-sender.show-tooltip .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+.email-header {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 0px;
+    margin-bottom: 10px;
+}
+
+
+    </style>
+</head>
+<body>
+    <div id="email-display">
+        <!-- email content - do I still need this? -->
+        <!-- ... -->
+
+    </div>
+    
+    
+
+    
+    <script>
+    // Define email content in a separate object
+    window.emails = {
+        0: {
+            subject: "Test Email", 
+            sender: "Administrator Support", 
+            senderAlias: "Sender Alias",
+            displayOption: 1,
+            content: 'This is not a suspicious email.<br>' +
+                     'You need to click the link below to save the cat! NOW!<br>' +
+                     '&nbsp;&nbsp;╱|、<br>' +
+                    '&nbsp;(˚ˎ 。7<br>' +
+                    '&nbsp;|、˜〵<br>' +
+                    'じしˍ,)ノ<br>' +
+                     '<span class="fake-link" title="https://kittenwar.com/">https://save-my-cat.com.</span><br>' +
+                     '<span class="fake-attachment"><span class="name">catransom.exe</span><span class="size">(1.2 MB)</span></span>'
+        },
+        1: {
+            subject: "Email Account Closure", 
+            sender: "security-admin@yandex.ru", 
+            senderAlias: "Cyber security dept",
+            displayOption: 1,
+            content: 'Attention recipient,<br><br>' +
+             'We have received your request to terminate your email account below, and the request will be concluded within 12 hours from now.<br><br>' +
+             '<strong>Affected Email Account Details</strong><br>' +
+             'Domain: <span class="fake-link" title="https://vortex.com">vortex.com</span><br>' +
+             'User: You<br>' +
+             'Email: <span class="fake-link" title="mailto:alexgreen@vortex.com">alexgreen@vortex.com</span><br>' +
+             'Time: 8/28/2024 1:23:22 a.m.<br><br>' +
+             '<strong>CANCEL REQUEST HERE</strong><br>' +
+             '<span class="fake-link" title="https://firebasestorage.login-secure.xyz">https://firebasestorage.googleapilt=64367341alex.green@vortex.com</span><br><br>' +
+             'If you did not make this request or you made it by mistake or unknowingly, quickly take action above to stop this email termination process. But if you made this request kindly ignore this message as this account will be terminated soon.<br><br>' +
+             '<b>Note:</b> If you fail to cancel this process above, we advise you to backup your mails and contacts as you will lose all your messages and contacts when this email "alex.green@vortex.com" account termination is concluded.<br><br>' +
+             '© Vortex<br><br>' +
+             '<strong>Source:</strong> Administrator Support © 2022 Cyber security dept<br>' +
+             'The information contained in or attached to this communication is intended solely for the use of the individual or entity to whom it is addressed and others authorized to receive it. It may contain confidential or legally privileged information. If you are not the intended recipient you are hereby notified that any disclosure, copying, distribution or taking any action in reliance on the contents of this information is strictly prohibited and may be unlawful. If you have received this communication in error, please notify me immediately by responding to this email and then delete it from your system. We are neither liable for the proper and complete transmission of the information contained in this communication nor for any delay in its receipt.'
+        },
+        2: {
+            subject: "URGENT: Vortex Health Alert", 
+            sender:  "CHI-Information@case.com", 
+            senderAlias: "Vortex Alers",
+            displayOption: 1,
+            content: 'I hope this message finds you in good health. I wanted to reach out to discuss a pressing health matter concerning our Vortex community.<br><br>' +
+                     'Recently, we&#39ve identified a case of a COVID-19 variant among our staff. Despite the high vaccination rates within our community, some variants can still pose risks, even to those who are vaccinated. As a precautionary measure, we&#39re actively conducting thorough contact tracing to swiftly identify and address any potential exposure risks.<br><br>' +
+                     'Your cooperation is crucial in this endeavor. We kindly request you to check if you&#39ve had any recent contact with the affected staff member. For your convenience, we&#39ve created a dedicated webpage where you can find more information and report any contact. Please visit the webpage here: ' +
+                     '<span class="fake-link" title="https://rjllegal.com/auth.vortex.com/">Access Team Member Profiles</span><br><br>' +
+                     'Your timely response is essential to safeguarding the health and safety of our community. If you have any concerns or queries, our medical team is available to assist you. You can contact them at ' +
+                     '<span class="fake-link" title="mailto:healthcarecenter@vortex.com">healthcarecenter@vortex.com</span><br><br>'  +
+                     'We&#39re fully committed to maintaining a safe environment and deeply appreciate your cooperation in these efforts. Please remember that this message is confidential and intended solely for you; kindly refrain from sharing or forwarding it.<br><br>' +
+                     'Thank you for your commitment to the well-being of our community. Together, we&#39ll successfully navigate through this challenge.<br><br>' +
+                     'Best regards,<br>' +
+                     'Vortex Health Care Center<br>' +
+                     'Email: ' +
+                     '<span class="fake-link" title="mailto:healthcarecenter@vortex.com">healthcarecenter@vortex.com</span><br>'  +
+                     'Phone: (510) 642-6000'
+        },
+        3: {
+            subject: "Batik Air Rebooking", 
+            sender: "service@your.batik-air-group.com", 
+            senderAlias: "Batik Air",
+            displayOption: 1,
+            content: 'Dear customer,<br><br>' +
+                     'Your flight was rebooked by us, because your original connection is no longer possible.<br><br>' +
+                     'Please excuse us for the inconvenience.<br><br>' +
+                     'You can find details for your booking or potential alternatives online at:<br><br>' +
+                     '<span class="fake-link" title="https://batik.securelogins.xyz">&#10132; My Bookings</span><br><br><br>' +
+                     'With kind regards,<br>' +
+                     'Your Batik Air Team<br><br>' +
+                     '<br><br>'
+        },
+        4: {
+            subject: "Reminder: Use your cash points", 
+            sender: "accounts@nutrisafes.biz",
+            senderAlias: "Nutrisafe",
+            displayOption: 1,
+            content: 'Dear Alex Green,<br><br>' +
+                     '<b>We want to remind you that you have over 500 cash points, expiring in 24 hours!</b><br><br>' +
+                     'For this reason, we selected a number of products that might be very attractive, just for you.<br><br>' +
+                     'Don&#39;t let your bonus points expire! Use this link to immediately choose your gift and spend your cash points:<br><br>' +
+                     '<span class="fake-link" title="https://nutrisafes.biz/logincatch/">Login now</span><br><br><br>' +
+                     'This is an automated message by Nutrisafe - delivering fresh nutrients free from contaminants. Do not reply to this message.<br>' +
+                     '<span class="fake-link" title="https://nutrisafe.com/support/">Support</span> | <span class="fake-link" title="https://nutrisafe.com/privacy/">Privacy Policy</span>'
+        },
+        5: {
+            subject: "Monthly Statement, August 2024", 
+            sender: "no_reply@email.securpay24.com",
+            senderAlias: "SecurePay24",
+            displayOption: 1,
+            content: '<b>Hello Mr. Green,</b><br><br>' +
+                     'Your monthly account statement is here. We now send it directly to your email for your convenience. You can view your payments from the previous month in the statement. Simply download your statement from this <br><br>' +
+                     '<span class="fake-link" title="http://secure-docs-update.com/pdf/DownloadSecureFile.pdf">link</span><br><br><br>' +
+                     'Kind regards<br>' +
+                     'Your SecurePay Team'
+        },
+        6: {
+            subject: "new or modified user account information", 
+            sender: "microsoft@microsoft-services.com.au",
+            senderAlias: "Microsoft online Services Team",
+            displayOption: 1,
+            content: '<span style="font-weight:bold; font-size:1.5em;">Your password has expired</span><br><br>' +
+                     'The following contains guidelines for resetting your password.<br><br>' +
+                     '<b>Please note:</b>' +
+                     '<ul>' + 
+                     '<li>You will be unable to access your profile and email after your current session expires.</li>' +
+                     '<li>For your security, passwords are valid for 90 days.</li>' +
+                     '</ul>' +
+                     '<b>User Name:</b> alex.green@vortex.com<br><br>' +
+                     'Go to the sign-in page, ' +
+                     '<span class="fake-link" title="https://batik.securelogins.xyz">https://portal.microsoft-services.com.au</span>' +
+                     ' to reset your password.<br><br>' +
+                     'Thank you for choosing to host your IT solutions with Microsoft.<br><br>' +
+                     'Sincerely,<br>' +
+                     'The Microsoft Team<br><br>' +
+                     'This is a mandatory service communication. To set your contact preferences for other communications, visit the ' +
+                     '<span class="fake-link" title="https://www.microsoft.com/cascadeauth/clients/communications/">Promotional Communications Manager</span>.<br><br>' +
+                     'This message was sent from an unmonitored e-mail address. Please do not reply to this message.'
+        },
+        7: {
+            subject: "Urgent help needed", 
+            sender: "friend@gmail.com",
+            senderAlias: "Vortex Alers",
+            displayOption: 1,
+            content: 'Hey,<br><br>' +
+                     'Are you in the office? Document details are ' +
+                     '<span class="fake-link" title="https://vortex.com/f8vnm3n5toc9sa8ed.pdf">here</span> ' +
+                     ' and attached.<br><br>' +
+                     'Kind regards,<br><br>' +
+                     'Kerrie Simons<br><br>' +
+                     'Chief Financial Officer<br><br>' +
+                     'Vortex<br><br>' +
+                     '<b>Important Notice:</b> The contents of this email are intended solely for the named address and are confidential; any unauthorised use, reproduction or storage of the contents is expressly prohibited. If you have received this email in error, please delete it and any attachments immediately and advise the sender by return email or telephone.<br><br>' +
+                     '<span class="fake-attachment"><span class="name">project_finances.scr</span><span class="size">(2.8 MB)</span></span>'
+        },
+        8: {
+            subject: "Virus Protection Software Offer", 
+            sender: "ciscosecurity.service@gmail.com",
+            senderAlias: "Cisco",
+            displayOption: 1,
+            content: 'Dear client,<br><br>' +
+                     'Is your computer at risk? Protect your computer with the CompuSafe software program. We are now offering a 45% discount. Take advantage of this offer and do not leave your computers at risk. One virus could potentially harm it to the point of no return. You can prevent this today by purchasing our computer software protection program. One low payment, will protect your computer indefinitely, guaranteed. To find out more information on this great deal visit our homepage at <br>' +
+                     '<span class="fake-link" title="https://cisco.com">Cisco</span><br><br>' +
+                     'See the attachment for great deals and masive savings!<br><br>' +
+                     'Best,<br>' +
+                     'Cisco Cybersecurity Team<br><br>' +
+                     '<span class="fake-attachment"><span class="name">cisco.ps1</span><span class="size">(15.2 MB)</span></span>'
+        },
+        9: {
+            subject: "Employment offer", 
+            sender: "nikbear@vortex.com",
+            senderAlias: "Nicolas Tackett",
+            displayOption: 1,
+            content: 'The executive board urgently needs experienced employees to complete additional work for an important task.<br>' +
+                     'In return, you will receive a pay rise of 20% and additional bonuses.<br>' +
+                     'Note: Candidates should be proficient in Microsoft Office and have a solid understanding of its capabilities (Excel, Word, and PowerPoint).<br>' +
+                     'The additional responsibility can be completed remotely, and you can accomplish all remote chores whenever it is convenient for you to do so. ' +
+                     'The opportunity is open to all experienced employees and will be filled on a first come first served basis.<br><br>' +
+                     'Please text Murat Arcak if you woud like to continue with the application process.<br><br>' +
+                     'Read the attachment for more information on the process.<br><br>' +
+                     'Best regards,<br>' +
+                     'C/O<br>' +
+                     'Murat Arcak, COO<br>' +
+                     'AI Development Unit<br>' +
+                     'Vortex<br>' +
+                     'P: (510) 216-7076<br><br>' +
+                     '<span class="fake-attachment"><span class="name">opportunity.pdf.exe</span><span class="size">(0.7 MB)</span></span>'
+        },
+        10: {
+            subject: "Attention", 
+            sender: "tdaniels12@gmail.com",
+            senderAlias: "Tom Daniels",
+            displayOption: 1,
+            content: 'Dear Alex Green,<br><br>' +
+                     'Your email account needs to be upgraded. Please open the attachment and follow the instructions. If this is not completed by the end of the day, your account will be suspended. Thank you for your cooperation!<br><br>' +
+                     'Sincere regards,<br>' +
+                     'Tom Daniels<br>' +
+                     'Webmail Administrator<br>' +
+                     'Computing Services<br>' +
+                     'Vortex<br><br>' +
+                     '<span class="fake-attachment"><span class="name">EmailUpgradeInstructions.pdf</span><span class="size">(74.1 MB)</span></span>'
+        },
+        11: {
+            subject: "Repairs in your office", 
+            sender: "facility@vertex.com",
+            senderAlias: "Facility Manager Jeremiah",
+            displayOption: 1,
+            content: 'Dear all,<br><br>' +
+                     'The facility management team is tasked to conduct several repairs in every office of your floor.<br><br>' +
+                     'Therefore, you might not be able to work without interruption for a period of one to two hours. Please see the attached table for the schedule and to see when we will work on your specific office.<br><br>' +
+                     'We apologize for the inconvenience.<br><br>' +
+                     'If you have any questions, contact your office manager.<br><br>' +
+                     'Kind regards,<br>' +
+                     'Jeremiah Woods<br><br>' +
+                     '<span class="fake-attachment"><span class="name">schedule.zip</span><span class="size">(4.1 MB)</span></span>'
+        },
+        12: {
+            subject: "Hey look what I just got", 
+            sender: "ethan.turner@vortex.com",
+            senderAlias: "Ethan Turner",
+            displayOption: 2,
+            content: '<p>---------- Forwarded message ----------<br>' +
+                     'From: System Amin &lt;administrator@secure-systems.xyga.org&gt;<br>' +
+                     'Date: Mon, Aug 7, 2024 at 10:15 AM<br>' +
+                     'Subject: Hey install this file<br>' +
+                     'To: ethan.turner@vortex.com>' +
+                     '</p>' +
+                     '<p>Hello Ethan,<br>' +
+                     'Please install the latest anti virus software.<br>' +
+                     'Your Systemm is at risk.<br>' +
+                     'Best regards,<br>' +
+                     'IT Administrator</p><br><br>' +
+                     '<span class="fake-attachment"><span class="name">antivirus-227.exe</span><span class="size">(6.8 MB)</span></span>'
+        },
+        13: {
+            subject: "Project Orion Submission Due by End of Day", 
+            sender: "priya.nair@vortex.com",
+            senderAlias: "Priya Nair",
+            displayOption: 2,
+            content: 'Hi Alex,<br><br>' +
+         'This is a reminder that the final submission for <b>Project Orion</b> is due <b>today by 5 PM</b>. It’s crucial that we receive your deliverables on time to meet the overall project timeline.<br><br>' +
+         'If there are any issues or you need assistance, please reach out to the team immediately. Missing this deadline could impact our client’s expectations and the project’s success.<br><br>' +
+         'Please submit your files as soon as possible using the link below:<br><br>' +
+         '<span class="fake-link" title="https://vortex.com/docs/internal/xy.59332.html">Submit Your Files Here</span><br><br>' +
+         'Thank you for your hard work and commitment.<br><br>' +
+         'Best,<br>' +
+         'Priya on behalf of the Project Management Team<br>' +
+         'Vortex'
+
+        },
+        14: {
+            subject: "A spot opened up", 
+            sender: "alice.tang@vortex.com",
+            senderAlias: "Alice Tang",
+            displayOption: 2,
+            content: 'Hi Alex,<br><br>' +
+                     'You recently indicated an interest in attending our internal training for social media posturing.<br><br>' +
+                     'It just so happened that a person dropped out on short notice, so a spot opened up.<br><br>' +
+                     'The training is open to everyone, so please <b>register as fast as possible</b>!<br><br>' +
+                     'You can register here: ' +
+                     '<span class="fake-link" title="https://vortex.com/service/courses-training/details.10273o.html">Training Overview</span><br>' +
+                     'See you soon,<br>' +
+                     'Alice'
+        },
+        15: {
+            subject: "Construction Near Building H", 
+            sender: "facility@vortex.com",
+            senderAlias: "Vortex Facility Services",
+            displayOption: 1,
+            content: 'Dear all,<br><br>' +
+                     'We are informing you that new construction is planned near building H to renovate part of the cafeteria. This construction will start next year.<br><br>' +
+                     'Further information will follow. You can read an initial plan at ' +
+                     '<span class="fake-link" title="https://vortex.com/main/development/construction-projects.html">https://vortex.com/main/development/construction-projects.html</span><br><br>' +
+                     'Thanks,<br>' +
+                     'Vortex Facility Services'
+        },
+        16: {
+            subject: "Change in Privacy Policy", 
+            sender: "no-reply@paypal.com",
+            senderAlias: "PayPal Notifications",
+            displayOption: 1,
+            content: 'Hi Alex,<br><br>' +
+                     'We are sending you this email because we have updated our Privacy Policy. These changes will apply as of October 1, 2024.<br><br>' +
+                     'We made these changes because PayPal implemented a new customer marketing platform. The key updates to the Privacy Policy include:' +
+                     '<ul>' +
+                     '<li>Clarification of when we rely on our legitimate interest to process your personal data. This includes a new section on "Personalized experience" (see <b>"HOW WE USE YOUR PERSONAL DATA"</b>).</li>' +
+                     '<li>Clarification on when we rely on your consent to process your personal data, which now includes additional examples such as to process electronic identification data (see <b>"HOW WE USE YOUR PERSONAL DATA"</b>).</li>' +
+                     '<li>Additional information regarding data retention to clarify our internal policies (see <b>"DATA RETENTION"</b>).</li>' +
+                     '</ul>' +
+                     'You can view the updated PayPal Privacy Policy ' +
+                     '<span class="fake-link" title="https://paypal.com/privacy">here</span>.<br><br>' +
+                     'Sincerely,<br>' +
+                     'PayPal Privacy Team'
+        },
+        17: {
+            subject: "Security Warning", 
+            sender: "no-reply@id.vortex.com",
+            senderAlias: "Vortex ID",
+            displayOption: 2,
+            content: '<b style="font-size: 1.3em;">Someone signed in to your id.vortex.com account from a new location</b><br><br>' +
+         '<div style="text-align: left; font-size: 1.1em;">' +
+         '<b>Hostname:</b> id.vortex.com<br>' +
+         '<b>User:</b> agreen (alex.green)<br>' +
+         '<b>IP Address:</b> 121.12.106.211<br>' +
+         '<b>Time:</b> 2024-08-15 12:18:20 UTC<br><br>' +
+         '</div>' +
+         '<div style="text-align: left;">' +
+         'If you recently signed in and recognize the IP address, you may disregard this email.<br><br>' +
+         'If you did not recently sign in, you should immediately <b>change your password</b>. Passwords should be unique and not used for any other sites or services.<br><br>' +
+         'To further protect your account, consider configuring a <b>two-factor authentication</b> method.<br><br>' +
+         '</div>' +
+         '<div style="text-align: center; font-size: 0.9em;">' +
+         "You're receiving this email because of your account on id.vortex.com.<br>" +
+         '<span class="fake-link" title="https://id.vortex.com/-/profile/notifications">Manage all notifications</span> · ' +
+         '<span class="fake-link" title="https://id.vortex.com/help">Help</span>' +
+         '</div>'
+        },
+        18: {
+            subject: "Your parcel is arriving tomorrow", 
+            sender: "notification@dpd.com",
+            senderAlias: "DPD Delivery",
+            displayOption: 1,
+            content: 'Hi, Alex Green<br><br>' +
+            '<div style="text-align: center;">' +
+    '<b style="font-size: 1.3em;">Your parcel is arriving tomorrow.</b><br><br>' +
+    'From <b>SuperFoods Co.</b><br><br>' +
+    'A <b>signature</b> is required for parcel delivery.<br><br>' +
+    '<b>Scheduled Delivery</b><br><br>' +
+    '<b style="font-size: 1.2em;">Friday 05/04/2024</b><br><br>' +
+    '<b>End of Day</b><br><br>' +
+    '<span class="fake-link" title="https://dpd.com/mydpd/fmp/pin?code=L3CGSxCVOA794Y">Track Your Parcel ›</span><br><br>' +
+    '<b style="font-size: 1.2em;">Not going to be home?</b><br><br>' +
+    'Log in to <span class="fake-link" title="https://dpd.com/mydpd/login/">change your delivery</span>.<br><br>' +
+    'You will be prompted to accept the <b>Terms and Conditions</b> to change delivery.<br><br><br><br>' +
+        '</div>' +
+         '<i>Please do not reply to this email.</i><br><br>' +
+         '<span class="fake-link" title="https://dpd.com/mydpd/settings/notifications/">Manage Delivery Alerts</span> | ' +
+         '<span class="fake-link" title="https://dpd.com/privacy/">Privacy Notice</span> | ' +
+         '<span class="fake-link" title="https://dpd.com/terms/">Service Terms</span>'
+        },
+        19: {
+            subject: "CEO’s Special Directive", 
+            sender: "ivanova@vortex.com",
+            senderAlias: "Nina Ivanova",
+            displayOption: 2,
+            content: 'Hi Alex,<br><br>' +
+         'Our CEO, <b>Luca Rossi</b>, has issued an important directive regarding the company’s new initiative. The attached document outlines key points that require your immediate attention.<br><br>' +
+         'Please review the attached directive and prepare for a team meeting tomorrow.<br><br>' +
+         'Best regards,<br>' +
+         'Nina Ivanova<br>' +
+         'Executive Assistant<br>' +
+         'Vortex<br><br>' +
+         '<span class="fake-attachment"><span class="name">ceo_directive.pdf</span><span class="size">(2.9 MB)</span></span>'
+        },
+        20: {
+            subject: "ASAP Review project roadmap", 
+            sender: "fdiop@vortex.com",
+            senderAlias: "Fatou Diop",
+            displayOption: 1,
+            content: 'Hi Alex,<br><br>' +
+                     'Please review the project roadmap I&#39;m presenting tomorrow (attached). Let me know if anything should be changed but be quick.<br><br>' +
+                     'I have to send it to the marketing team later today already, so please complete this ASAP!<br><br>' +
+                     'Thanks,<br>' +
+                     'Fatou<br><br>' +
+                     '<span class="fake-attachment"><span class="name">project_fa.pptx</span><span class="size">(12.1 MB)</span></span>'
+        },
+        21: {
+            subject: "Need Supplies? Fill Out the Order Form", 
+            sender: "ksaki@vortex.com",
+            senderAlias: "Katja Saki (Office Management)",
+            displayOption: 2,
+            content: 'Hi All,<br><br>' +
+                     'If you&#39;re running low on office supplies, please fill out the attached order form and send it back to me. We&#39;ll place a bulk order at the end of the week to restock everything.<br><br>' +
+                     '-K<br><br>' +
+                     '<span class="fake-attachment"><span class="name">supplies_order.pdf</span><span class="size">(1.3 MB)</span></span>'
+        },
+        22: {
+            subject: "Update from our product pipeline meeting", 
+            sender: "acol@bluepine.net",
+            senderAlias: "Andrew Collins",
+            displayOption: 1,
+            content: 'Dear all,<br><br>' +
+                     'We held an initial meeting regarding the planning of our new product pipeline at Bluepine and vortex.<br><br>' +
+                     'For everyone who was not present, please find the notes attached.<br><br>' +
+                     'We will update you on the progress of further developments in the coming weeks.<br><br>' +
+                     'Kind regards,<br>' +
+                     'Andrew Collins<br>' +
+                     'Product Manager, BluePine<br>' +
+                     '<span class="fake-attachment"><span class="name">august_meeting_notes.docx</span><span class="size">(12.1 MB)</span></span>'
+        },
+        23: {
+            subject: "(no subject)", 
+            sender: "prn-mfg-scan@it.vortex.com",
+            senderAlias: "No-Reply PrintService",
+            displayOption: 1,
+            content: 'Your scheduled print request has been executed:<br><br>' +
+                     'Printed document (12x)<br><br>' +
+                     '<span class="fake-attachment"><span class="name">source.pdf</span><span class="size">(2.4 MB)</span></span>'
+        },
+        24: {
+            subject: "Puppy!", 
+            sender: "chayes@vortex.com",
+            senderAlias: "Christina Hayes",
+            displayOption: 2,
+            content: 'Hey Alex,<br><br>' +
+                     'Check out my new puppy!<br><br>' +
+                     'I&#39;ll bring her to the office if you&#39;re nice.<br><br>' +
+                     'Cheers<br>' +
+                     'C<br><br>' +
+                     '<span class="fake-attachment"><span class="name">bestpupper.png</span><span class="size">(0.3 MB)</span></span>'
+        },
+        // TBA more emails!!
+    };
+
+    window.showEmailContent = function(emailId) {
+        console.log('showEmailContent called with emailId:', emailId);
+
+        // Show email display section
+        document.getElementById('email-display').style.display = 'block';
+        console.log('email-display shown');
+
+        // Fetch email content based on emailId from the emails object
+        const email = emails[emailId];
+        const emailSubject = email.subject;
+        const emailContent = email.content;
+        const emailSenderAlias = email.senderAlias;
+        const emailSenderAddress = email.sender;
+        const displayOption = email.displayOption;
+        console.log('Fetched email details:', emailSubject, emailContent, emailSenderAlias, emailSenderAddress);
+
+        // Determine the sender display based on the option
+        let senderHTML = '';
+        if (displayOption === 1) {
+            senderHTML = '<span class="sender-option1">' +
+                        emailSenderAlias + 
+                        ' <span class="email-address">&lt;' + emailSenderAddress + '&gt;</span></span>';
+        } else if (displayOption === 2) {
+            senderHTML = '<span class="email-sender" onmouseover="showTooltip(this)" onmouseout="hideTooltip(this)">' +
+                        emailSenderAlias + 
+                        '<span class="tooltip">' + emailSenderAlias + '<br>' + emailSenderAddress + '</span></span>';
+        }
+
+        var emailDisplayHTML = '<div class="email-header">' +
+                            '<h2>' + emailSubject + '</h2>' +
+                            '<p>From: ' + senderHTML + '</p>' +
+                            '<p>To: alex.green@vortex.com</p>' +
+                            '</div>' +
+                            '<p>' + emailContent + '</p>';
+        document.getElementById('email-display').innerHTML = emailDisplayHTML;
+        console.log('Populated email-display with email details');
+    };
+
+function showTooltip(element) {
+    element.tooltipTimeout = setTimeout(() => {
+        element.classList.add('show-tooltip');
+    }, 1000);
+}
+
+function hideTooltip(element) {
+    clearTimeout(element.tooltipTimeout);
+    element.classList.remove('show-tooltip');
+}
+
+
+
+    window.showEmailList = function() {
+        document.getElementById('email-display').style.display = 'none';
+
+        document.getElementById('email-list').style.display = 'block';
+
+        const emailSubject = emails[emailId].subject;
+        const emailContent = emails[emailId].content;
+        const emailSender = emails[emailId].sender;
+        console.log('Fetched email details:', emailSubject, emailContent, emailSender);
+
+        var emailDisplayHTML = '<h2>' + emailSubject + '</h2><p>From: ' + emailSender + '</p><p>To: recipient@example.com</p><p>' + emailContent + '</p><button onclick="showReportOverlay(' + emailId + ')">Report</button>';
+        document.getElementById('email-display').innerHTML = emailDisplayHTML;
+        console.log('Populated email-display with email details');
+    };
+
+    //
+    // Call showEmailContent:
+    // THIS NEEDS TO BE MANUALLY ADJUSTED 
+    // OTHERWISE REPLACE WITH VAR
+    //
+
+    showEmailContent(21);
+        window.populateEmailList();
+
+    </script>
+</body>
+</html>
